@@ -9,11 +9,11 @@ public class SoldierBehaviour : AbstractCreatureBehaviour
 {
     //Declarations
     [SerializeField] private SoldierData _data;
+    private NavMeshAgent _navAgent;
 
-    
+
 
     //Monobehaviours
-
 
 
 
@@ -24,51 +24,24 @@ public class SoldierBehaviour : AbstractCreatureBehaviour
         _currentHp = _maxHp;
 
         _baseSpeed = _data.GetBaseMoveSpeed();
-        GetComponent<NavMeshAgent>().speed = _baseSpeed;
+
+        _navAgent = GetComponent<NavMeshAgent>();
+        _navAgent.speed = _baseSpeed;
     }
 
-    private void RespondToIdling(CreatureState newState) 
+    protected override void RunUtilsOnDeath()
     {
-        if (newState == CreatureState.Idling)
-            Debug.Log("Idling Detected.");
+        EndCurrentMovement();
     }
 
-    private void RespondToActionPerforming(CreatureState newState)
+    private void EndCurrentMovement()
     {
-        if (newState == CreatureState.PerformingAction)
-            Debug.Log($"ActionPerforming Detected");
+        if (_navAgent !=null)
+            _navAgent.ResetPath();
     }
-
-    private void RespondToMoving(CreatureState newState)
-    {
-        if (newState == CreatureState.Moving)
-            Debug.Log($"Moving Detected");
-    }
-
 
 
     //Externals
-    [Button]
-    public void SubscribeResponsesToStateChangeEvent()
-    {
-        SubscribeToStateChange(RespondToIdling);
-        SubscribeToStateChange(RespondToActionPerforming);
-        SubscribeToStateChange(RespondToMoving);
-    }
-
-    [Button]
-    public void UpdateState(CreatureState newState, string desiredActionName)
-    {
-        ChangeState(newState, desiredActionName);
-    }
-
-    [Button]
-    public void UnsubscribeResponsesFromStateChangeEvent()
-    {
-        UnsubscribeFromStateChange(RespondToIdling);
-        UnsubscribeFromStateChange(RespondToActionPerforming);
-        UnsubscribeFromStateChange(RespondToMoving);
-    }
-
+    
 
 }

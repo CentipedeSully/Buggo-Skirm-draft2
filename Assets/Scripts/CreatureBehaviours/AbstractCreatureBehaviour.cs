@@ -30,7 +30,6 @@ public abstract class AbstractCreatureBehaviour : MonoBehaviour
     [SerializeField] [ReadOnly] protected string _currentActionName;
     private string _defaultActionName = "None";
 
-
     [TabGroup("Core", "General")]
     [SerializeField] protected int _currentHp;
     [TabGroup("Core", "General")]
@@ -42,7 +41,7 @@ public abstract class AbstractCreatureBehaviour : MonoBehaviour
 
 
 
-    public delegate void StateChangeFunction(CreatureState newState);
+    public delegate void StateChangeFunction(CreatureState newState, string actionName);
     public event StateChangeFunction OnStateChanged;
 
 
@@ -53,9 +52,14 @@ public abstract class AbstractCreatureBehaviour : MonoBehaviour
         RunOnAwakeUtils();
     }
 
+    private void OnEnable()
+    {
+        OnStateChanged += ListenForDeath;
+    }
+
     private void OnDisable()
     {
-        UnsubscribeAllUtilities();
+        UnsubscribeAllFromOnStateChanged();
     }
 
 
@@ -73,13 +77,13 @@ public abstract class AbstractCreatureBehaviour : MonoBehaviour
 
     protected void SubscribeToStateChange(StateChangeFunction function)
     {
-        if (!IsFunctionAlreadySubscribed(function))
+        if (!IsFunctionAlreadySubscribedToOnStateChanged(function))
             OnStateChanged += function;
         else 
             Debug.LogWarning($" Ignoring subscription request for function {function.Method.Name}. Method already subscribed to event.");
     }
 
-    private bool IsFunctionAlreadySubscribed(StateChangeFunction function)
+    protected bool IsFunctionAlreadySubscribedToOnStateChanged(StateChangeFunction function)
     {
         Delegate[] subsList = OnStateChanged?.GetInvocationList();
 
@@ -103,7 +107,7 @@ public abstract class AbstractCreatureBehaviour : MonoBehaviour
         OnStateChanged -= function;
     }
 
-    private void UnsubscribeAllUtilities()
+    private void UnsubscribeAllFromOnStateChanged()
     {
         Delegate[] subscriptionList = OnStateChanged?.GetInvocationList();
 
@@ -118,30 +122,62 @@ public abstract class AbstractCreatureBehaviour : MonoBehaviour
         
     }
 
-
-    protected void ChangeState(CreatureState newState, string actionName = "undefined")
+    protected void ChangeState(CreatureState newState, string actionName)
     {
         if (newState != _currentState && newState != CreatureState.unset)
         {
             _currentState = newState;
             UpdateActionName(actionName);
-            OnStateChanged?.Invoke(_currentState);
+            OnStateChanged?.Invoke(_currentState, _currentActionName);
         }
     }
 
     private void UpdateActionName(string desiredName)
     {
-        //defaults the name, if it's undefined
-        if (desiredName == "undefined" || desiredName == "" || desiredName == null)
+        //default the name if it's empty or null
+        if (desiredName == "" || desiredName == null)
             _currentActionName = _defaultActionName;
         else
             _currentActionName = desiredName;
     }
 
-    
+    protected virtual void RunUtilsOnDeath() { }
+
+    private void ListenForDeath(CreatureState state, string actionName)
+    {
+        if (_currentState == CreatureState.Dead)
+        {
+            RunUtilsOnDeath();
+        }
+    }
 
     //Externals
+    [BoxGroup("Debug")]
+    [Button]
+    public void TakeDamage(int damage)
+    {
+        if (_currentState != CreatureState.Dead)
+        {
+            _currentHp -= damage;
 
+            if (_currentHp <= 0)
+            {
+                ChangeState(CreatureState.Dead, "");
+            }
+        }
+    }
+
+    [BoxGroup("Debug")]
+    [Button]
+    public void Die()
+    {
+        if (_currentState != CreatureState.Dead)
+        {
+            _currentHp = 0;
+            ChangeState(CreatureState.Dead, "");
+        }
+
+    }
 
 
 }
