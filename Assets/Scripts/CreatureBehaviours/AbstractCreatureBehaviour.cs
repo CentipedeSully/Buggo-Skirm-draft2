@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 
 public enum CreatureState
@@ -41,11 +42,15 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour
     [TabGroup("Core", "Movement")]
     [SerializeField] protected float _closeEnoughDistance = .2f;
     [TabGroup("Core", "Combat")]
+    [SerializeField] protected AbstractAttack _coreAtk;
+    [TabGroup("Core", "Combat")]
     [SerializeField] [ReadOnly] protected Dictionary<ResourceType, int> _currentCorpseYield = new();
+    [TabGroup("Core", "Death")]
+    [SerializeField] protected float _despawnTime = .5f;
 
 
 
-
+    protected NavMeshAgent _navAgent;
 
     public delegate void StateChangeFunction(CreatureState newState, string actionName);
     public event StateChangeFunction OnStateChanged;
@@ -61,11 +66,19 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour
     private void OnEnable()
     {
         OnStateChanged += ListenForDeath;
+        SubscribeToComponentEvents();
     }
 
     private void OnDisable()
     {
+        UnsubscribeFromComponentEvents();
         UnsubscribeAllFromOnStateChanged();
+    }
+
+    private void Update()
+    {
+        if (_currentState == CreatureState.Moving)
+            WatchForMovementCompletion();
     }
 
 
@@ -75,11 +88,28 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour
     {
         _entityID = GetInstanceID();
         _currentActionName = _defaultActionName;
+        InitializeUtilsOnAwake();
         ReadData();
         RunOtherUtilsOnAwake();
     }
+
+    protected virtual void InitializeUtilsOnAwake()
+    {
+        _navAgent = GetComponent<NavMeshAgent>();
+    }
     protected abstract void ReadData();
     protected virtual void RunOtherUtilsOnAwake() { }
+
+
+    protected virtual void SubscribeToComponentEvents()
+    {
+        _coreAtk.SubscribeToStateChange(UpdateStateViaAtkStateChangeEvent);
+    }
+    protected virtual void UnsubscribeFromComponentEvents()
+    {
+        _coreAtk.UnsubscribeFromStateChange(UpdateStateViaAtkStateChangeEvent);
+    }
+
 
     protected void SubscribeToStateChange(StateChangeFunction function)
     {
@@ -88,7 +118,6 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour
         else 
             Debug.LogWarning($" Ignoring subscription request for function {function.Method.Name}. Method already subscribed to event.");
     }
-
     protected bool IsFunctionAlreadySubscribedToOnStateChanged(StateChangeFunction function)
     {
         Delegate[] subsList = OnStateChanged?.GetInvocationList();
@@ -107,12 +136,10 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour
             return false;
         }
     }
-
     protected void UnsubscribeFromStateChange(StateChangeFunction function)
     {
         OnStateChanged -= function;
     }
-
     private void UnsubscribeAllFromOnStateChanged()
     {
         Delegate[] subscriptionList = OnStateChanged?.GetInvocationList();
@@ -128,6 +155,37 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour
         
     }
 
+
+    private void UpdateStateViaAtkStateChangeEvent(AtkState state, string actionName)
+    {
+        switch (state)
+        {
+            case AtkState.NotAtking:
+                ChangeState(CreatureState.Idling, actionName);
+                break;
+
+            case AtkState.PreparingAtk:
+                ChangeState(CreatureState.EnteringAction, actionName);
+                break;
+
+            case AtkState.CastingAtk:
+                ChangeState(CreatureState.PerformingAction, actionName);
+                break;
+
+            case AtkState.RecovingFromAtk:
+                ChangeState(CreatureState.RecoveringFromAction, actionName);
+                break;
+
+            case AtkState.CoolingAtk:
+                ChangeState(CreatureState.Idling, actionName);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+
     protected void ChangeState(CreatureState newState, string actionName)
     {
         if (newState != _currentState && newState != CreatureState.unset)
@@ -137,11 +195,11 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour
             OnStateChanged?.Invoke(_currentState, _currentActionName);
         }
     }
-
     protected void ChangeState(CreatureState newState)
     {
         ChangeState(newState, "");
     }
+
 
     private void UpdateActionName(string desiredName)
     {
@@ -152,7 +210,7 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour
             _currentActionName = desiredName;
     }
 
-    protected virtual void RunOtherUtilsOnDeath() { }
+
 
     private void ListenForDeath(CreatureState state, string actionName)
     {
@@ -160,10 +218,40 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour
         {
             CreateCorpseYield();
             RunOtherUtilsOnDeath();
+
+            //Be sure to despawn if the creature yields no resources
+            if (_currentCorpseYield.Count == 0)
+                DespawnAfterDelay();
         }
     }
-
     protected abstract void CreateCorpseYield();
+    protected virtual void RunOtherUtilsOnDeath() { }
+    protected void DespawnAfterDelay()
+    {
+        Invoke(nameof(Despawn), _despawnTime);
+    }
+    protected void Despawn()
+    {
+        Destroy(gameObject);
+    }
+
+
+    protected virtual void EndCurrentMovement()
+    {
+        if (_navAgent != null)
+            _navAgent.ResetPath();
+    }
+    protected virtual void WatchForMovementCompletion()
+    {
+        if (_navAgent.remainingDistance <= _closeEnoughDistance)
+        {
+            EndCurrentMovement();
+            ChangeState(CreatureState.Idling);
+        }
+
+    }
+
+
 
 
 
@@ -254,6 +342,9 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour
                         _currentCorpseYield.Remove(desiredResource);
                 }
             }
+
+            if (_currentCorpseYield.Count == 0)
+                DespawnAfterDelay();
 
             return returnsList;
         }

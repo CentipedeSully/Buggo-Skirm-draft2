@@ -9,17 +9,13 @@ public class SoldierBehaviour : AbstractCreatureBehaviour
 {
     //Declarations
     [SerializeField] private SoldierData _data;
-    private NavMeshAgent _navAgent;
+    
 
 
 
 
     //Monobehaviours
-    private void Update()
-    {
-        if (_currentState == CreatureState.Moving)
-            WatchForMovementCompletion();
-    }
+
 
 
     //internals
@@ -30,8 +26,6 @@ public class SoldierBehaviour : AbstractCreatureBehaviour
         _creatureType = _data.GetCreatureType();
 
         _baseSpeed = _data.GetBaseMoveSpeed();
-
-        _navAgent = GetComponent<NavMeshAgent>();
         _navAgent.speed = _baseSpeed;
     }
 
@@ -40,21 +34,9 @@ public class SoldierBehaviour : AbstractCreatureBehaviour
         EndCurrentMovement();
     }
 
-    private void EndCurrentMovement()
-    {
-        if (_navAgent !=null)
-            _navAgent.ResetPath();
-    }
+    
 
-    private void WatchForMovementCompletion()
-    {
-        if (_navAgent.remainingDistance <= _closeEnoughDistance)
-        {
-            EndCurrentMovement();
-            ChangeState(CreatureState.Idling);
-        }
-        
-    }
+    
 
     //Externals
     public override void CommandMovementToPosition(Vector3 position)
