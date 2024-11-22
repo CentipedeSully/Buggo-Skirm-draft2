@@ -8,6 +8,16 @@ public class CommanderBehaviour : AbstractCreatureBehaviour
     //Declarations
     [SerializeField] private CommanderData _data;
 
+    public override void CommandMovementToPosition(Vector3 position)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    protected override void CreateCorpseYield()
+    {
+        _currentCorpseYield = _data.GetBaseCorpseYield();
+    }
+
 
     //Monobehaviours
 

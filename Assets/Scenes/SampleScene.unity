@@ -130,6 +130,12 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 573036545741324331, guid: daf8fe48b37d78a4e925b44781f4c244,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 573036545741324331, guid: daf8fe48b37d78a4e925b44781f4c244,
+        type: 3}
     - target: {fileID: 1472260622996625530, guid: daf8fe48b37d78a4e925b44781f4c244,
         type: 3}
       propertyPath: m_Name
@@ -220,6 +226,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1707830546}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &129593070
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 129593071}
+  m_Layer: 0
+  m_Name: Target
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &129593071
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 129593070}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.39, y: 0, z: -1.71}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1663680280}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &168109076
 Mesh:
@@ -556,38 +593,6 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
---- !u!1 &335572893
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 335572894}
-  m_Layer: 0
-  m_Name: AlphaNest
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &335572894
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 335572893}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -18, y: 1, z: -18}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1184706214}
-  m_Father: {fileID: 2083417829}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -706,38 +711,6 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 1
---- !u!1 &490288408
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 490288409}
-  m_Layer: 0
-  m_Name: BetaNest
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &490288409
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 490288408}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 18, y: 1, z: 18}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1323383295}
-  m_Father: {fileID: 2083417829}
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!850595691 &496830785
 LightingSettings:
   m_ObjectHideFlags: 0
@@ -952,8 +925,13 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 335572894}
+    m_TransformParent: {fileID: 1663680280}
     m_Modifications:
+    - target: {fileID: 223640403368087725, guid: 50b614d2d941a404b87e34d8178b26e4,
+        type: 3}
+      propertyPath: _faction
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 223640403368087725, guid: 50b614d2d941a404b87e34d8178b26e4,
         type: 3}
       propertyPath: _haulerContainer
@@ -968,7 +946,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _objectiveLocation
       value: 
-      objectReference: {fileID: 490288409}
+      objectReference: {fileID: 1323383295}
     - target: {fileID: 223640403368087725, guid: 50b614d2d941a404b87e34d8178b26e4,
         type: 3}
       propertyPath: _commanderContainer
@@ -977,22 +955,22 @@ PrefabInstance:
     - target: {fileID: 2725645615033163822, guid: 50b614d2d941a404b87e34d8178b26e4,
         type: 3}
       propertyPath: m_Name
-      value: Nest Large
+      value: Alpha Main
       objectReference: {fileID: 0}
     - target: {fileID: 2939250120001803001, guid: 50b614d2d941a404b87e34d8178b26e4,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -18
       objectReference: {fileID: 0}
     - target: {fileID: 2939250120001803001, guid: 50b614d2d941a404b87e34d8178b26e4,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2939250120001803001, guid: 50b614d2d941a404b87e34d8178b26e4,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -18
       objectReference: {fileID: 0}
     - target: {fileID: 2939250120001803001, guid: 50b614d2d941a404b87e34d8178b26e4,
         type: 3}
@@ -1002,17 +980,17 @@ PrefabInstance:
     - target: {fileID: 2939250120001803001, guid: 50b614d2d941a404b87e34d8178b26e4,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2939250120001803001, guid: 50b614d2d941a404b87e34d8178b26e4,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2939250120001803001, guid: 50b614d2d941a404b87e34d8178b26e4,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2939250120001803001, guid: 50b614d2d941a404b87e34d8178b26e4,
         type: 3}
@@ -1055,7 +1033,7 @@ GameObject:
   - component: {fileID: 1204573331}
   - component: {fileID: 1204573330}
   m_Layer: 6
-  m_Name: Ground
+  m_Name: Ground & Walls
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2624,6 +2602,7 @@ Transform:
   m_Children:
   - {fileID: 751629803}
   - {fileID: 1516450568}
+  - {fileID: 1399425579}
   - {fileID: 1597626006}
   m_Father: {fileID: 290362262}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2633,8 +2612,13 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 490288409}
+    m_TransformParent: {fileID: 2052672347}
     m_Modifications:
+    - target: {fileID: 223640403368087725, guid: 50b614d2d941a404b87e34d8178b26e4,
+        type: 3}
+      propertyPath: _faction
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 223640403368087725, guid: 50b614d2d941a404b87e34d8178b26e4,
         type: 3}
       propertyPath: _haulerContainer
@@ -2649,7 +2633,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _objectiveLocation
       value: 
-      objectReference: {fileID: 335572894}
+      objectReference: {fileID: 1184706214}
     - target: {fileID: 223640403368087725, guid: 50b614d2d941a404b87e34d8178b26e4,
         type: 3}
       propertyPath: _commanderContainer
@@ -2658,42 +2642,42 @@ PrefabInstance:
     - target: {fileID: 2725645615033163822, guid: 50b614d2d941a404b87e34d8178b26e4,
         type: 3}
       propertyPath: m_Name
-      value: Nest Large
+      value: Beta Main
       objectReference: {fileID: 0}
     - target: {fileID: 2939250120001803001, guid: 50b614d2d941a404b87e34d8178b26e4,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 2939250120001803001, guid: 50b614d2d941a404b87e34d8178b26e4,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2939250120001803001, guid: 50b614d2d941a404b87e34d8178b26e4,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2939250120001803001, guid: 50b614d2d941a404b87e34d8178b26e4,
-        type: 3}
-      propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2939250120001803001, guid: 50b614d2d941a404b87e34d8178b26e4,
         type: 3}
-      propertyPath: m_LocalRotation.x
+      propertyPath: m_LocalPosition.z
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 2939250120001803001, guid: 50b614d2d941a404b87e34d8178b26e4,
+        type: 3}
+      propertyPath: m_LocalRotation.w
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2939250120001803001, guid: 50b614d2d941a404b87e34d8178b26e4,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2939250120001803001, guid: 50b614d2d941a404b87e34d8178b26e4,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2939250120001803001, guid: 50b614d2d941a404b87e34d8178b26e4,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2939250120001803001, guid: 50b614d2d941a404b87e34d8178b26e4,
         type: 3}
@@ -2751,7 +2735,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1597626006}
+  m_Father: {fileID: 1232800222}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1399425580
 MonoBehaviour:
@@ -2940,9 +2924,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1399425579}
   - {fileID: 1204573329}
-  - {fileID: 2083417829}
   m_Father: {fileID: 1232800222}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1633417813
@@ -2976,6 +2958,39 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1707830546}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1663680279
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1663680280}
+  m_Layer: 0
+  m_Name: Alpha Nests
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1663680280
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1663680279}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1184706214}
+  - {fileID: 129593071}
+  m_Father: {fileID: 2118440162}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1707830545
 GameObject:
   m_ObjectHideFlags: 0
@@ -2986,7 +3001,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1707830546}
   m_Layer: 0
-  m_Name: BetaTeam Containers
+  m_Name: BetaTeam Entities
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3008,9 +3023,10 @@ Transform:
   - {fileID: 1079613983}
   - {fileID: 65229372}
   - {fileID: 1633417814}
+  - {fileID: 2052672347}
   m_Father: {fileID: 1491591962}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2083417828
+--- !u!1 &2052672346
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3018,30 +3034,29 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2083417829}
+  - component: {fileID: 2052672347}
   m_Layer: 0
-  m_Name: Nest Areas
+  m_Name: Beta Nests
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2083417829
+--- !u!4 &2052672347
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2083417828}
+  m_GameObject: {fileID: 2052672346}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 335572894}
-  - {fileID: 490288409}
-  m_Father: {fileID: 1597626006}
+  - {fileID: 1323383295}
+  m_Father: {fileID: 1707830546}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2118440161
 GameObject:
@@ -3053,7 +3068,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2118440162}
   m_Layer: 0
-  m_Name: AlphaTeam Containers
+  m_Name: AlphaTeam Entities
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3075,6 +3090,7 @@ Transform:
   - {fileID: 1427970263}
   - {fileID: 1494806658}
   - {fileID: 1089671215}
+  - {fileID: 1663680280}
   m_Father: {fileID: 1491591962}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807

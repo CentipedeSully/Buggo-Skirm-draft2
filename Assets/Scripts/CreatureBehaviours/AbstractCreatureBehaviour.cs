@@ -17,15 +17,17 @@ public enum CreatureState
     Dead
 }
 
-public abstract class AbstractCreatureBehaviour : MonoBehaviour
+public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour
 {
     //Delcarations
     [TabGroup("Core","Info")]
     [SerializeField] [ReadOnly] protected int _entityID;
     [TabGroup("Core", "Info")]
-    [SerializeField] [ReadOnly] protected CreatureType _creatureType;
+    [SerializeField] [ReadOnly] protected CreatureType _creatureType = CreatureType.unset;
     [TabGroup("Core", "Info")]
-    [SerializeField] [ReadOnly] protected CreatureState _currentState;
+    [SerializeField] [ReadOnly] protected Faction _faction = Faction.unset;
+    [TabGroup("Core", "Info")]
+    [SerializeField] [ReadOnly] protected CreatureState _currentState = CreatureState.unset;
     [TabGroup("Core", "Info")]
     [SerializeField] [ReadOnly] protected string _currentActionName;
     private string _defaultActionName = "None";
@@ -36,6 +38,10 @@ public abstract class AbstractCreatureBehaviour : MonoBehaviour
     [SerializeField] protected int _maxHp;
     [TabGroup("Core", "General")]
     [SerializeField] protected int _baseSpeed;
+    [TabGroup("Core", "Movement")]
+    [SerializeField] protected float _closeEnoughDistance = .2f;
+    [TabGroup("Core", "Combat")]
+    [SerializeField] [ReadOnly] protected Dictionary<ResourceType, int> _currentCorpseYield = new();
 
 
 
@@ -132,6 +138,11 @@ public abstract class AbstractCreatureBehaviour : MonoBehaviour
         }
     }
 
+    protected void ChangeState(CreatureState newState)
+    {
+        ChangeState(newState, "");
+    }
+
     private void UpdateActionName(string desiredName)
     {
         //default the name if it's empty or null
@@ -141,17 +152,29 @@ public abstract class AbstractCreatureBehaviour : MonoBehaviour
             _currentActionName = desiredName;
     }
 
-    protected virtual void RunUtilsOnDeath() { }
+    protected virtual void RunOtherUtilsOnDeath() { }
 
     private void ListenForDeath(CreatureState state, string actionName)
     {
         if (_currentState == CreatureState.Dead)
         {
-            RunUtilsOnDeath();
+            CreateCorpseYield();
+            RunOtherUtilsOnDeath();
         }
     }
 
+    protected abstract void CreateCorpseYield();
+
+
+
     //Externals
+    public void SetFaction(Faction newFaction)
+    {
+        if (_faction != newFaction)
+            _faction = newFaction;
+    }
+
+
     [BoxGroup("Debug")]
     [Button]
     public void TakeDamage(int damage)
@@ -162,7 +185,7 @@ public abstract class AbstractCreatureBehaviour : MonoBehaviour
 
             if (_currentHp <= 0)
             {
-                ChangeState(CreatureState.Dead, "");
+                ChangeState(CreatureState.Dead);
             }
         }
     }
@@ -174,10 +197,68 @@ public abstract class AbstractCreatureBehaviour : MonoBehaviour
         if (_currentState != CreatureState.Dead)
         {
             _currentHp = 0;
-            ChangeState(CreatureState.Dead, "");
+            ChangeState(CreatureState.Dead);
         }
 
     }
 
+    [BoxGroup("Debug")]
+    [Button]
+    public abstract void CommandMovementToPosition(Vector3 position);
 
+    [BoxGroup("Debug")]
+    [Button]
+    public void CommandMovementToPosition(Transform transform)
+    {
+        CommandMovementToPosition(transform.position);
+    }
+
+    [BoxGroup("Debug")]
+    [Button]
+    public Dictionary<ResourceType, int> CollectAnyResourcesFromCorpse(Dictionary<ResourceType, int> decrementList)
+    {
+        if (_currentState == CreatureState.Dead && decrementList != null)
+        {
+            Dictionary<ResourceType, int> returnsList = new Dictionary<ResourceType, int>();
+
+            foreach (ResourceType desiredResource in decrementList.Keys)
+            {
+                //does this resource exist on the corpse?
+                if (_currentCorpseYield.ContainsKey(desiredResource))
+                {
+                    int requestedAmount = decrementList[desiredResource];
+                    int existingAmount = _currentCorpseYield[desiredResource];
+
+                    //is there enough to fulfill the request?
+                    if (requestedAmount <= existingAmount)
+                    {
+                        //remove the full amount from the corpse
+                        _currentCorpseYield[desiredResource] = existingAmount - requestedAmount;
+
+                        //add the taken amount to the returnsList
+                        returnsList.Add(desiredResource, requestedAmount);
+                    }
+
+                    //take what we can
+                    else
+                    {
+                        //remove everything
+                        _currentCorpseYield[desiredResource] = 0;
+
+                        //add what was there to the returnsList
+                        returnsList.Add(desiredResource, existingAmount);
+                    }
+
+                    //remove the key if this resource is all gone
+                    if (_currentCorpseYield[desiredResource] == 0)
+                        _currentCorpseYield.Remove(desiredResource);
+                }
+            }
+
+            return returnsList;
+        }
+
+        else
+            return null;
+    }
 }

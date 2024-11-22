@@ -20,52 +20,16 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: _baseCorpseYield
-      Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[ResourceType, Assembly-CSharp],[System.Int32,
-        mscorlib]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[ResourceType, Assembly-CSharp]],
-        mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: _baseSpawnCost
-      Entry: 7
-      Data: 2|System.Collections.Generic.Dictionary`2[[ResourceType, Assembly-CSharp],[System.Int32,
-        mscorlib]], mscorlib
-    - Name: comparer
-      Entry: 9
-      Data: 1
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
+    SerializationNodes: []
   _prefab: {fileID: 1472260622996625530, guid: daf8fe48b37d78a4e925b44781f4c244, type: 3}
   _creatureType: 2
   _baseHealth: 1
   _baseMoveSpeed: 1
+  _corpseResources: 0100000002000000
+  _corpseResourceYields: 0300000001000000
+  _spawnResources: 
+  _spawnResourceCosts: 
+  _corpseYieldDictionaryBuilt: 1
+  _spawnCostDictionaryBuilt: 1
   _baseDamage: 0
   _baseAtkCooldown: 0

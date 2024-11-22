@@ -13,6 +13,13 @@ public enum ResourceType
     Jelly
 }
 
+public enum Faction
+{
+    unset,
+    Neutral,
+    Alpha,
+    Beta
+}
 
 public class NestBehaviour : MonoBehaviour
 {
@@ -37,6 +44,8 @@ public class NestBehaviour : MonoBehaviour
 
     [TabGroup("Core", "Setup")]
     [SerializeField] private Transform _objectiveLocation;
+    [TabGroup("Core", "Setup")]
+    [SerializeField] private Faction _faction = Faction.unset;
 
     [TabGroup("Debug")]
     [SerializeField] private bool _forceSpawnSoldersOverTime = false;
@@ -81,11 +90,19 @@ public class NestBehaviour : MonoBehaviour
     [Button]
     public void SpawnSoldier()
     {
+        //Spawn the new Soldier
         GameObject newSoldier = Instantiate(_soldierData.GetPrefab(), _spawnPoint,false);
+        
+        //Put the soldier in it's proper container (for cleanliness)
         newSoldier.transform.SetParent(_soldierContainer, true);
 
-        NavMeshAgent navAgent =newSoldier.GetComponent<NavMeshAgent>();
-        navAgent.SetDestination(_objectiveLocation.position);
+        //setup the soldier's core behaviour
+        SoldierBehaviour behaviour = newSoldier.GetComponent<SoldierBehaviour>();
+        behaviour.SetFaction(_faction);
+
+        //command the soldier!
+        behaviour.CommandMovementToPosition(_objectiveLocation.transform.position);
+
     }
 
     public void SpawnHauler()

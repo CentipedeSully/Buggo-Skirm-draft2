@@ -10,6 +10,16 @@ public class HaulerBehaviour : AbstractCreatureBehaviour
     //Declarations
     [SerializeField] private HaulerData _data;
 
+    public override void CommandMovementToPosition(Vector3 position)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    protected override void CreateCorpseYield()
+    {
+        _currentCorpseYield = _data.GetBaseCorpseYield();
+    }
+
 
     //Monobehaviours
 

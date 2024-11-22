@@ -13,8 +13,13 @@ public class SoldierBehaviour : AbstractCreatureBehaviour
 
 
 
-    //Monobehaviours
 
+    //Monobehaviours
+    private void Update()
+    {
+        if (_currentState == CreatureState.Moving)
+            WatchForMovementCompletion();
+    }
 
 
     //internals
@@ -22,6 +27,7 @@ public class SoldierBehaviour : AbstractCreatureBehaviour
     {
         _maxHp = _data.GetBaseHealth();
         _currentHp = _maxHp;
+        _creatureType = _data.GetCreatureType();
 
         _baseSpeed = _data.GetBaseMoveSpeed();
 
@@ -29,7 +35,7 @@ public class SoldierBehaviour : AbstractCreatureBehaviour
         _navAgent.speed = _baseSpeed;
     }
 
-    protected override void RunUtilsOnDeath()
+    protected override void RunOtherUtilsOnDeath()
     {
         EndCurrentMovement();
     }
@@ -40,8 +46,33 @@ public class SoldierBehaviour : AbstractCreatureBehaviour
             _navAgent.ResetPath();
     }
 
+    private void WatchForMovementCompletion()
+    {
+        if (_navAgent.remainingDistance <= _closeEnoughDistance)
+        {
+            EndCurrentMovement();
+            ChangeState(CreatureState.Idling);
+        }
+        
+    }
 
     //Externals
-    
+    public override void CommandMovementToPosition(Vector3 position)
+    {
+        if (_currentState != CreatureState.Dead && _navAgent != null)
+        {
+            ChangeState(CreatureState.Moving);
 
+            _navAgent.SetDestination(position);
+        }
+    }
+
+    protected override void CreateCorpseYield()
+    {
+        _currentCorpseYield = new();
+
+        //create a personal copy of the data's corpse-yield dictionary
+        foreach (KeyValuePair<ResourceType,int> entry in _data.GetBaseCorpseYield())
+            _currentCorpseYield.Add(entry.Key, entry.Value);
+    }
 }
