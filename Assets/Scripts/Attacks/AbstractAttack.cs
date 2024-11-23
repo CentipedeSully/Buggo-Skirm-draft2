@@ -16,10 +16,30 @@ public enum AtkState
     CoolingAtk
 }
 
+public interface IAttack
+{
+    void PerformAttack();
+    void InterruptAttack();
+    void EndCooldown();
+    
+    AtkState GetAtkState();
+    void SetAttacker(IAttacker attacker);
+    void SetDamage(int damage);
+    void SetCooldown(float cooldown);
 
 
+    bool IsAtkReady();
+    bool IsAttacking();
+    bool IsCoolingDown();
 
-public class AbstractAttack : SerializedMonoBehaviour
+    void SubscribeToStateChange(AbstractAttack.StateChangeFunction function);
+    bool IsFunctionAlreadySubscribedToOnStateChanged(AbstractAttack.StateChangeFunction function);
+    public void UnsubscribeFromStateChange(AbstractAttack.StateChangeFunction function);
+
+}
+
+
+public abstract class AbstractAttack : SerializedMonoBehaviour, IAttack
 {
     //Declarations
     [SerializeField] [ReadOnly] protected AtkState _atkState = AtkState.unset;
@@ -28,8 +48,9 @@ public class AbstractAttack : SerializedMonoBehaviour
     [SerializeField] protected float _castDuration = .2f;
     [SerializeField] protected float _recoverDuration = .5f;
     [SerializeField] protected float _coolDuration = .5f;
+    [SerializeField] protected int _damage = 0;
 
-    protected AbstractCreatureBehaviour _creatureBehaviour;
+    protected IAttacker _attackerBehaviour;
     protected IEnumerator _atkController;
 
     public delegate void StateChangeFunction(AtkState atkState, string actionName);
@@ -52,6 +73,7 @@ public class AbstractAttack : SerializedMonoBehaviour
     protected virtual void InitializeUtils()
     {
         _atkState = AtkState.NotAtking;
+        _attackerBehaviour = GetComponent<IAttacker>();
 
         //default any missing atkState names into empty Strings
         //the creatureBehaviour is expected to know how to handle empty actionNames
@@ -80,7 +102,7 @@ public class AbstractAttack : SerializedMonoBehaviour
         ChangeState(AtkState.RecovingFromAtk);
         yield return new WaitForSeconds(_recoverDuration);
 
-        //chain the cooldown sequence. Kept separate to simplify forcing or bypassing Cooldowns
+        //chain the cooldown sequence. Kept separate to simplify force-entering or bypassing Cooldowns
         _atkController = EnterCooldownSequence();
         StartCoroutine(_atkController);
     }
@@ -116,8 +138,6 @@ public class AbstractAttack : SerializedMonoBehaviour
             }
         }
     }
-
-
 
 
 
@@ -222,4 +242,9 @@ public class AbstractAttack : SerializedMonoBehaviour
         OnStateChanged -= function;
     }
 
+    public void SetDamage(int damage) { _damage = damage; }
+
+    public void SetCooldown(float cooldown) { _coolDuration = cooldown; }
+
+    public void SetAttacker(IAttacker attacker) { _attackerBehaviour = attacker; }
 }

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3988659222606615426}
   - component: {fileID: 573036545741324331}
-  - component: {fileID: 1102621579818796951}
+  - component: {fileID: 9200902536360466166}
   - component: {fileID: 5980364548351067793}
   - component: {fileID: 8842038066700035295}
   m_Layer: 7
@@ -33,6 +33,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1397330842341422430}
   - {fileID: 7861420832958440028}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -51,12 +52,16 @@ MonoBehaviour:
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
-    ReferencedUnityObjects: []
+    ReferencedUnityObjects:
+    - {fileID: 9200902536360466166}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes:
+    - Name: _coreAtk
+      Entry: 10
+      Data: 0
     - Name: _currentCorpseYield
       Entry: 7
       Data: 0|System.Collections.Generic.Dictionary`2[[ResourceType, Assembly-CSharp],[System.Int32,
@@ -92,10 +97,11 @@ MonoBehaviour:
   _maxHp: 0
   _baseSpeed: 0
   _closeEnoughDistance: 0.2
-  _coreAtk: {fileID: 1102621579818796951}
+  _damage: 0
+  _cooldown: 0
   _despawnTime: 0.5
   _data: {fileID: 11400000, guid: 8170ad8220911da418a4c661fd5e575b, type: 2}
---- !u!114 &1102621579818796951
+--- !u!114 &9200902536360466166
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -104,7 +110,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1472260622996625530}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25c9123342da7fe4ead445a7a4f8803d, type: 3}
+  m_Script: {fileID: 11500000, guid: 61b939ad4c8e9d8488afd8beab62bbf4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
@@ -144,7 +150,7 @@ MonoBehaviour:
       Data: 2
     - Name: $v
       Entry: 1
-      Data: preping (Abstract) attack
+      Data: Entering Basic Melee
     - Name: 
       Entry: 8
       Data: 
@@ -156,7 +162,7 @@ MonoBehaviour:
       Data: 3
     - Name: $v
       Entry: 1
-      Data: casting (Abstract) attack
+      Data: Casting Basic Melee
     - Name: 
       Entry: 8
       Data: 
@@ -168,7 +174,7 @@ MonoBehaviour:
       Data: 4
     - Name: $v
       Entry: 1
-      Data: recovering (Abstract) attack
+      Data: Recovering Basic Melee
     - Name: 
       Entry: 8
       Data: 
@@ -183,6 +189,17 @@ MonoBehaviour:
   _castDuration: 0.2
   _recoverDuration: 0.5
   _coolDuration: 0.5
+  _damage: 0
+  _atkOrigin: {fileID: 1397330842341422430}
+  _atkRadius: 0.25
+  _entityLayerMask:
+    serializedVersion: 2
+    m_Bits: 384
+  _doesAtkHitMultipleEntities: 0
+  _isHitDetectionSatisfied: 0
+  _entitiesHitByLatestAttack: 
+  _gizmoColor: {r: 1, g: 0, b: 0, a: 1}
+  _showGizmo: 1
 --- !u!195 &5980364548351067793
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -243,6 +260,7 @@ GameObject:
   - component: {fileID: 4597355465177623275}
   - component: {fileID: 7025893850896406493}
   - component: {fileID: 6584806579216649351}
+  - component: {fileID: 3831462224443634764}
   - component: {fileID: 5355418781896693098}
   m_Layer: 7
   m_Name: Cube
@@ -316,6 +334,31 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &3831462224443634764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3488073833002924933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d922ded3479720d40bdaf5c2ac8971cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects:
+    - {fileID: 573036545741324331}
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: _coreDamageableScript
+      Entry: 10
+      Data: 0
 --- !u!65 &5355418781896693098
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -337,6 +380,37 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &7517227553002780901
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1397330842341422430}
+  m_Layer: 7
+  m_Name: Atk Origin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1397330842341422430
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7517227553002780901}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.621}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3988659222606615426}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8172676553744207745
 GameObject:
   m_ObjectHideFlags: 0
@@ -348,6 +422,7 @@ GameObject:
   - component: {fileID: 7861420832958440028}
   - component: {fileID: 4207757394142220164}
   - component: {fileID: 5504946753420206389}
+  - component: {fileID: 3685105760128808113}
   - component: {fileID: 8961165588573599359}
   m_Layer: 7
   m_Name: Body
@@ -422,6 +497,31 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &3685105760128808113
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8172676553744207745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d922ded3479720d40bdaf5c2ac8971cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects:
+    - {fileID: 573036545741324331}
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: _coreDamageableScript
+      Entry: 10
+      Data: 0
 --- !u!65 &8961165588573599359
 BoxCollider:
   m_ObjectHideFlags: 0

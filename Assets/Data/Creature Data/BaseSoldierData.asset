@@ -31,5 +31,5 @@ MonoBehaviour:
   _spawnResourceCosts: 
   _corpseYieldDictionaryBuilt: 1
   _spawnCostDictionaryBuilt: 1
-  _baseDamage: 0
-  _baseAtkCooldown: 0
+  _baseDamage: 1
+  _baseAtkCooldown: 0.75

@@ -18,7 +18,24 @@ public enum CreatureState
     Dead
 }
 
-public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour
+public interface IDamageable
+{
+
+    GameObject GetGameObject();
+    Faction GetFaction();
+    int GetEntityID();
+    void TakeDamage(int damage);
+    bool IsDead();
+}
+
+public interface IAttacker
+{
+    GameObject GetGameObject();
+    Faction GetFaction();
+    int GetEntityID();
+}
+
+public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour, IDamageable, IAttacker
 {
     //Delcarations
     [TabGroup("Core","Info")]
@@ -42,7 +59,11 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour
     [TabGroup("Core", "Movement")]
     [SerializeField] protected float _closeEnoughDistance = .2f;
     [TabGroup("Core", "Combat")]
-    [SerializeField] protected AbstractAttack _coreAtk;
+    [SerializeField] protected IAttack _coreAtk;
+    [TabGroup("Core", "Combat")]
+    [SerializeField] protected int _damage;
+    [TabGroup("Core", "Combat")]
+    [SerializeField] protected float _cooldown;
     [TabGroup("Core", "Combat")]
     [SerializeField] [ReadOnly] protected Dictionary<ResourceType, int> _currentCorpseYield = new();
     [TabGroup("Core", "Death")]
@@ -261,7 +282,9 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour
         if (_faction != newFaction)
             _faction = newFaction;
     }
-
+    public Faction GetFaction() { return _faction; }
+    public GameObject GetGameObject() { return gameObject; }
+    public int GetEntityID() { return _entityID; }
 
     [BoxGroup("Debug")]
     [Button]
@@ -352,4 +375,6 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour
         else
             return null;
     }
+
+    public bool IsDead() { return _currentState == CreatureState.Dead; }
 }

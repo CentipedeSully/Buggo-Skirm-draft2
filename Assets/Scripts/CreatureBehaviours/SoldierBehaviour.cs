@@ -25,6 +25,11 @@ public class SoldierBehaviour : AbstractCreatureBehaviour
         _currentHp = _maxHp;
         _creatureType = _data.GetCreatureType();
 
+        _damage = _data.GetBaseDamage();
+        _cooldown = _data.GetBaseAtkCooldown();
+        _coreAtk.SetDamage( _damage );
+        _coreAtk.SetCooldown( _cooldown);
+
         _baseSpeed = _data.GetBaseMoveSpeed();
         _navAgent.speed = _baseSpeed;
     }
