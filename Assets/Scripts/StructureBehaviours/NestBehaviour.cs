@@ -101,7 +101,7 @@ public class NestBehaviour : MonoBehaviour
         behaviour.SetFaction(_faction);
 
         //command the soldier!
-        behaviour.CommandMovementToPosition(_objectiveLocation.transform.position);
+        behaviour.SetObjective(_objectiveLocation);
 
     }
 

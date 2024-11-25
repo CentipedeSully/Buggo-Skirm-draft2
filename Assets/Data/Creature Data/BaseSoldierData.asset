@@ -25,8 +25,9 @@ MonoBehaviour:
   _creatureType: 2
   _baseHealth: 1
   _baseMoveSpeed: 1
-  _corpseResources: 0100000002000000
-  _corpseResourceYields: 0300000001000000
+  _baseTurnSpeed: 120
+  _corpseResources: 
+  _corpseResourceYields: 
   _spawnResources: 
   _spawnResourceCosts: 
   _corpseYieldDictionaryBuilt: 1

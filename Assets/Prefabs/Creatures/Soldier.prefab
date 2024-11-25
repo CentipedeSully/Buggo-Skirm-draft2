@@ -50,57 +50,42 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
+    SerializedFormat: 0
+    SerializedBytes: 0b01080000005f0063006f0072006500410074006b00000000000101130000005f00630075007200720065006e00740043006f0072007000730065005900690065006c0064002f00000000016b000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00440069006300740069006f006e00610072007900600032005b005b005200650073006f00750072006300650054007900700065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d002c005b00530079007300740065006d002e0049006e007400330032002c0020006d00730063006f0072006c00690062005d005d002c0020006d00730063006f0072006c00690062000000000001010800000063006f006d00700061007200650072002f01000000015c000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e0045006e0075006d0045007100750061006c0069007400790043006f006d0070006100720065007200600031005b005b005200650073006f00750072006300650054007900700065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d005d002c0020006d00730063006f0072006c00690062000100000006000000000000000007050600000000000000000705
     ReferencedUnityObjects:
     - {fileID: 9200902536360466166}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: _coreAtk
-      Entry: 10
-      Data: 0
-    - Name: _currentCorpseYield
-      Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[ResourceType, Assembly-CSharp],[System.Int32,
-        mscorlib]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[ResourceType, Assembly-CSharp]],
-        mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
+    SerializationNodes: []
   _entityID: 0
   _creatureType: 0
   _faction: 0
   _currentState: 0
   _currentActionName: 
-  _currentHp: 0
-  _maxHp: 0
+  _currentObjective: {fileID: 0}
+  _isObjectivePathingInterruptable: 1
+  _detectionLayerMask:
+    serializedVersion: 2
+    m_Bits: 384
+  _detectionRadius: 3
+  _pursuitTarget: {fileID: 0}
+  _pursuitTargetPosition: {x: 0, y: 0, z: 0}
+  _distanceFromPursuitTarget: 0
+  _targetRelativeDirection: {x: 0, y: 0, z: 0}
+  _pursuitPointerColor: {r: 1, g: 0, b: 0, a: 0}
+  _showPursuitLine: 1
   _baseSpeed: 0
   _closeEnoughDistance: 0.2
+  _currentHp: 0
+  _maxHp: 0
   _damage: 0
   _cooldown: 0
   _despawnTime: 0.5
   _data: {fileID: 11400000, guid: 8170ad8220911da418a4c661fd5e575b, type: 2}
+  _targetingAngleForgiveness: 5
+  _targetingTurnSpeed: 180
 --- !u!114 &9200902536360466166
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -114,83 +99,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
+    SerializedFormat: 0
+    SerializedBytes: 01010c0000005f0061006300740069006f006e004e0061006d00650073002f000000000168000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e00440069006300740069006f006e00610072007900600032005b005b00410074006b00530074006100740065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d002c005b00530079007300740065006d002e0053007400720069006e0067002c0020006d00730063006f0072006c00690062005d005d002c0020006d00730063006f0072006c00690062000000000001010800000063006f006d00700061007200650072002f010000000158000000530079007300740065006d002e0043006f006c006c0065006300740069006f006e0073002e00470065006e0065007200690063002e0045006e0075006d0045007100750061006c0069007400790043006f006d0070006100720065007200600031005b005b00410074006b00530074006100740065002c00200041007300730065006d0062006c0079002d004300530068006100720070005d005d002c0020006d00730063006f0072006c0069006200010000000600000000000000000705060300000000000000042e1d010200000024006b00020000000000000027010200000024007600011400000045006e0074006500720069006e00670020004200610073006900630020004d0065006c006500650005042e1d010200000024006b000300000000000000270102000000240076000113000000430061007300740069006e00670020004200610073006900630020004d0065006c006500650005042e1d010200000024006b0004000000000000002701020000002400760001160000005200650063006f0076006500720069006e00670020004200610073006900630020004d0065006c0065006500050705
     ReferencedUnityObjects: []
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: _actionNames
-      Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[AtkState, Assembly-CSharp],[System.String,
-        mscorlib]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[AtkState, Assembly-CSharp]],
-        mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 3
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 2
-    - Name: $v
-      Entry: 1
-      Data: Entering Basic Melee
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 3
-    - Name: $v
-      Entry: 1
-      Data: Casting Basic Melee
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 4
-    - Name: $v
-      Entry: 1
-      Data: Recovering Basic Melee
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
+    SerializationNodes: []
   _atkState: 0
+  _atkOrigin: {fileID: 1397330842341422430}
+  _localAtkDirection: {x: 0, y: 0, z: 0}
   _prepDuration: 0.3
   _castDuration: 0.2
   _recoverDuration: 0.5
   _coolDuration: 0.5
   _damage: 0
-  _atkOrigin: {fileID: 1397330842341422430}
+  _minAtkRange: 0
+  _maxAtkRange: 1
   _atkRadius: 0.25
   _entityLayerMask:
     serializedVersion: 2
@@ -347,18 +273,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
+    SerializedFormat: 0
+    SerializedBytes: 0b01150000005f0063006f0072006500440061006d00610067006500610062006c00650053006300720069007000740000000000
     ReferencedUnityObjects:
     - {fileID: 573036545741324331}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: _coreDamageableScript
-      Entry: 10
-      Data: 0
+    SerializationNodes: []
 --- !u!65 &5355418781896693098
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -510,18 +433,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
+    SerializedFormat: 0
+    SerializedBytes: 0b01150000005f0063006f0072006500440061006d00610067006500610062006c00650053006300720069007000740000000000
     ReferencedUnityObjects:
     - {fileID: 573036545741324331}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: _coreDamageableScript
-      Entry: 10
-      Data: 0
+    SerializationNodes: []
 --- !u!65 &8961165588573599359
 BoxCollider:
   m_ObjectHideFlags: 0

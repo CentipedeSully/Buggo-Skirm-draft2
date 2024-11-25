@@ -10,14 +10,35 @@ public class HaulerBehaviour : AbstractCreatureBehaviour
     //Declarations
     [SerializeField] private HaulerData _data;
 
-    public override void CommandMovementToPosition(Vector3 position)
-    {
-        throw new System.NotImplementedException();
-    }
 
     protected override void CreateCorpseYield()
     {
         _currentCorpseYield = _data.GetBaseCorpseYield();
+    }
+
+    protected override void GetWithinRangeOfEntity()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    protected override bool IsDetectedEntityValid(Collider detection)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    protected override bool IsEntityInRangeForInteraction()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    protected override bool IsPursuitTargetStillValid()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    protected override void PerformEntityBasedInteraction()
+    {
+        throw new System.NotImplementedException();
     }
 
 

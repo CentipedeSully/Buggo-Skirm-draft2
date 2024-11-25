@@ -27,7 +27,8 @@ public abstract class AbstractCreatureData : SerializedScriptableObject
     [SerializeField] protected int _baseHealth = 1;
     [TabGroup("Setup", "Base")]
     [SerializeField] protected int _baseMoveSpeed = 10;
-
+    [TabGroup("Setup", "Base")]
+    [SerializeField] protected float _baseTurnSpeed = 120f;
     [TabGroup("Setup", "Base")]
     [SerializeField] protected ResourceType[] _corpseResources;
     [TabGroup("Setup", "Base")]
@@ -70,6 +71,7 @@ public abstract class AbstractCreatureData : SerializedScriptableObject
             _baseCorpseYield.Clear();
 
             _corpseYieldDictionaryBuilt = true;
+            Debug.Log($"{name} CorpseYield Data Successfully cleared.");
         }
 
         else if (_corpseResources.Length == _corpseResourceYields.Length)
@@ -81,6 +83,9 @@ public abstract class AbstractCreatureData : SerializedScriptableObject
                 _baseCorpseYield.Add(_corpseResources[i], _corpseResourceYields[i]);
 
             _corpseYieldDictionaryBuilt = true;
+
+            Debug.Log($"{name} CorpseYield Data Successfully rebuilt.");
+
         }
 
         else Debug.LogError($"'Available Resources' array length doesn't match 'Resource Yields' array length." +
@@ -96,6 +101,8 @@ public abstract class AbstractCreatureData : SerializedScriptableObject
             _baseSpawnCost.Clear();
 
             _spawnCostDictionaryBuilt = true;
+            Debug.Log($"{name} SpawnCost Data Successfully cleared.");
+
         }
 
         else if (_spawnResources.Length == _spawnResourceCosts.Length)
@@ -108,6 +115,8 @@ public abstract class AbstractCreatureData : SerializedScriptableObject
                 _baseSpawnCost.Add(_spawnResources[i], _spawnResourceCosts[i]);
 
             _spawnCostDictionaryBuilt = true;
+            Debug.Log($"{name} SpawnCost Data Successfully rebuilt.");
+
         }
 
         else Debug.LogError($"'Required Resources' array length doesn't match 'Resource Costs' array length." +
@@ -117,6 +126,7 @@ public abstract class AbstractCreatureData : SerializedScriptableObject
 
     public CreatureType GetCreatureType() {  return _creatureType; }
     public int GetBaseHealth() { return _baseHealth; }
+    public float GetBaseTurnSpeed() { return _baseTurnSpeed; }
     public int GetBaseMoveSpeed() { return _baseMoveSpeed; }
     public Dictionary<ResourceType, int> GetBaseCorpseYield() { return _baseCorpseYield; }
     public Dictionary<ResourceType, int> GetBaseSpawnCost() { return _baseSpawnCost; }

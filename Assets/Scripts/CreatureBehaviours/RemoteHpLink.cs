@@ -4,7 +4,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
-public class RemoteHpLink : SerializedMonoBehaviour, IDamageable
+public class RemoteHpLink : SerializedMonoBehaviour, IDamageable, IEntity
 {
     [SerializeField] private IDamageable _coreDamageableScript;
 

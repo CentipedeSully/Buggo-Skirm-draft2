@@ -31,10 +31,15 @@ public interface IAttack
     bool IsAtkReady();
     bool IsAttacking();
     bool IsCoolingDown();
+    float GetMinAtkRange();
+    float GetMaxAtkRange();
+    Vector3 GetAtkDirection();
 
     void SubscribeToStateChange(AbstractAttack.StateChangeFunction function);
     bool IsFunctionAlreadySubscribedToOnStateChanged(AbstractAttack.StateChangeFunction function);
     public void UnsubscribeFromStateChange(AbstractAttack.StateChangeFunction function);
+
+    
 
 }
 
@@ -43,12 +48,16 @@ public abstract class AbstractAttack : SerializedMonoBehaviour, IAttack
 {
     //Declarations
     [SerializeField] [ReadOnly] protected AtkState _atkState = AtkState.unset;
+    [SerializeField] protected Transform _atkOrigin;
+    [SerializeField] [ReadOnly] protected Vector3 _localAtkDirection;
     [SerializeField] protected Dictionary<AtkState,string> _actionNames = new Dictionary<AtkState,string>();
     [SerializeField] protected float _prepDuration = .3f;
     [SerializeField] protected float _castDuration = .2f;
     [SerializeField] protected float _recoverDuration = .5f;
     [SerializeField] protected float _coolDuration = .5f;
     [SerializeField] protected int _damage = 0;
+    [SerializeField] protected float _minAtkRange;
+    [SerializeField] protected float _maxAtkRange;
 
     protected IAttacker _attackerBehaviour;
     protected IEnumerator _atkController;
@@ -82,6 +91,10 @@ public abstract class AbstractAttack : SerializedMonoBehaviour, IAttack
         DefaultActionNameIfNecessary(AtkState.CastingAtk);
         DefaultActionNameIfNecessary(AtkState.RecovingFromAtk);
         DefaultActionNameIfNecessary(AtkState.CoolingAtk);
+
+        //calculate the AtkDirection.
+        //Used to orient the attacker's rotation into a favorable attack angle
+        _localAtkDirection = (transform.position - _atkOrigin.position).normalized;
     }
 
     protected void DefaultActionNameIfNecessary(AtkState state)
@@ -247,4 +260,9 @@ public abstract class AbstractAttack : SerializedMonoBehaviour, IAttack
     public void SetCooldown(float cooldown) { _coolDuration = cooldown; }
 
     public void SetAttacker(IAttacker attacker) { _attackerBehaviour = attacker; }
+
+    public float GetMinAtkRange() { return _minAtkRange; }
+    public float GetMaxAtkRange() { return _maxAtkRange; }
+
+    public Vector3 GetAtkDirection() { return _localAtkDirection; }
 }

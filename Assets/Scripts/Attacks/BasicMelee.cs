@@ -2,14 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 
 
 public class BasicMelee : AbstractAttack
 {
     //Declarations
-    [BoxGroup("Atack Casting")]
-    [SerializeField] private Transform _atkOrigin;
     [BoxGroup("Atack Casting")]
     [SerializeField] private float _atkRadius;
     [BoxGroup("Atack Casting")]
@@ -100,9 +99,6 @@ public class BasicMelee : AbstractAttack
             _entitiesHitByLatestAttack.Clear();
         }
     }
-
-
-
 
     //Externals
 

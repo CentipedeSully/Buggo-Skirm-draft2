@@ -8,14 +8,34 @@ public class CommanderBehaviour : AbstractCreatureBehaviour
     //Declarations
     [SerializeField] private CommanderData _data;
 
-    public override void CommandMovementToPosition(Vector3 position)
+    protected override void CreateCorpseYield()
+    {
+        _currentCorpseYield = _data.GetBaseCorpseYield();
+    }
+
+    protected override void GetWithinRangeOfEntity()
     {
         throw new System.NotImplementedException();
     }
 
-    protected override void CreateCorpseYield()
+    protected override bool IsDetectedEntityValid(Collider detection)
     {
-        _currentCorpseYield = _data.GetBaseCorpseYield();
+        throw new System.NotImplementedException();
+    }
+
+    protected override bool IsEntityInRangeForInteraction()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    protected override bool IsPursuitTargetStillValid()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    protected override void PerformEntityBasedInteraction()
+    {
+        throw new System.NotImplementedException();
     }
 
 

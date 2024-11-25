@@ -4,13 +4,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UIElements;
 
 
 public enum CreatureState
 {
     unset,
     Idling,
-    Moving,
+    MovingToObjective,
+    PursuingEntity,
     EnteringAction,
     PerformingAction,
     RecoveringFromAction,
@@ -35,7 +37,14 @@ public interface IAttacker
     int GetEntityID();
 }
 
-public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour, IDamageable, IAttacker
+public interface IEntity
+{
+    int GetEntityID();
+    Faction GetFaction();
+    GameObject GetGameObject();
+}
+
+public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour, IDamageable, IAttacker, IEntity
 {
     //Delcarations
     [TabGroup("Core","Info")]
@@ -50,22 +59,54 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour, IDama
     [SerializeField] [ReadOnly] protected string _currentActionName;
     private string _defaultActionName = "None";
 
-    [TabGroup("Core", "General")]
-    [SerializeField] protected int _currentHp;
-    [TabGroup("Core", "General")]
-    [SerializeField] protected int _maxHp;
-    [TabGroup("Core", "General")]
+
+
+    [TabGroup("Core", "Ai")]
+    [SerializeField] [ReadOnly] protected Transform _currentObjective;
+    protected Vector3 _objectiveDestination;
+    [TabGroup("Core", "Ai")]
+    [SerializeField] protected bool _isObjectivePathingInterruptable = true;
+    [TabGroup("Core", "Ai")]
+    [SerializeField] protected LayerMask _detectionLayerMask;
+    [TabGroup("Core", "Ai")]
+    [SerializeField] protected float _detectionRadius = 3;
+    [TabGroup("Core", "Ai")]
+    [SerializeField] [ReadOnly] protected GameObject _pursuitTarget;
+    [TabGroup("Core", "Ai")]
+    [SerializeField] [ReadOnly] protected Vector3 _pursuitTargetPosition;
+    [TabGroup("Core", "Ai")]
+    [SerializeField] [ReadOnly] protected float _distanceFromPursuitTarget;
+    [TabGroup("Core", "Ai")]
+    [SerializeField] [ReadOnly] protected Vector3 _targetRelativeDirection;
+    [TabGroup("Core", "Ai")]
+    [SerializeField] protected Color _pursuitPointerColor;
+    [TabGroup("Core", "Ai")]
+    [SerializeField] protected bool _showPursuitLine = true;
+    protected bool _isInValidPursuit = false;
+
+
+    [TabGroup("Core", "Movement")]
     [SerializeField] protected int _baseSpeed;
     [TabGroup("Core", "Movement")]
+    [SerializeField] protected float _baseTurnSpeed;
+    [TabGroup("Core", "Movement")]
     [SerializeField] protected float _closeEnoughDistance = .2f;
+
+
     [TabGroup("Core", "Combat")]
-    [SerializeField] protected IAttack _coreAtk;
+    [SerializeField] protected int _currentHp;
+    [TabGroup("Core", "Combat")]
+    [SerializeField] protected int _maxHp;
     [TabGroup("Core", "Combat")]
     [SerializeField] protected int _damage;
     [TabGroup("Core", "Combat")]
     [SerializeField] protected float _cooldown;
     [TabGroup("Core", "Combat")]
+    [SerializeField] protected IAttack _coreAtk;
+    [TabGroup("Core", "Combat")]
     [SerializeField] [ReadOnly] protected Dictionary<ResourceType, int> _currentCorpseYield = new();
+
+
     [TabGroup("Core", "Death")]
     [SerializeField] protected float _despawnTime = .5f;
 
@@ -98,8 +139,13 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour, IDama
 
     private void Update()
     {
-        if (_currentState == CreatureState.Moving)
-            WatchForMovementCompletion();
+        ManageCreatureBehaviour();
+        
+    }
+
+    private void OnDrawGizmos()
+    {
+        DrawPursuitLine();
     }
 
 
@@ -220,8 +266,6 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour, IDama
     {
         ChangeState(newState, "");
     }
-
-
     private void UpdateActionName(string desiredName)
     {
         //default the name if it's empty or null
@@ -238,6 +282,8 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour, IDama
         if (_currentState == CreatureState.Dead)
         {
             CreateCorpseYield();
+            EndCurrentMovement();
+            _coreAtk?.InterruptAttack();
             RunOtherUtilsOnDeath();
 
             //Be sure to despawn if the creature yields no resources
@@ -257,21 +303,182 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour, IDama
     }
 
 
-    protected virtual void EndCurrentMovement()
+    protected void UpdateObjectiveDestination()
     {
-        if (_navAgent != null)
-            _navAgent.ResetPath();
+        if (_currentObjective != null)
+            _objectiveDestination = _currentObjective.position;
+
+        else 
+            _objectiveDestination = transform.position;
+
+        _navAgent.SetDestination(_objectiveDestination);
     }
-    protected virtual void WatchForMovementCompletion()
+    protected virtual void ApproachObjective()
     {
-        if (_navAgent.remainingDistance <= _closeEnoughDistance)
+        //track (and path towards) the objective's position this frame (if it exists)
+        UpdateObjectiveDestination();
+
+        //remain vigilant if our focus is interruptable
+        if (_isObjectivePathingInterruptable)
+            DetectPursuableEntities();
+
+        //end the movement if we're close enough to the objective (assuming the pathing is completed)
+        if (_navAgent.pathPending)
+            return;
+
+        else if (_navAgent.remainingDistance <= _closeEnoughDistance)
         {
             EndCurrentMovement();
+            _currentObjective = null;
             ChangeState(CreatureState.Idling);
         }
 
     }
+    protected void EndCurrentMovement()
+    {
+        if (_navAgent != null)
+            _navAgent.ResetPath();
+    }
 
+
+    protected virtual void DetectPursuableEntities()
+    {
+        Collider[] detections = Physics.OverlapSphere(transform.position,_detectionRadius, _detectionLayerMask);
+
+        foreach (Collider detection in detections)
+        {
+            if (IsDetectedEntityValid(detection))
+            {
+                _pursuitTarget = detection.gameObject;
+                ChangeState(CreatureState.PursuingEntity);
+            }
+        }
+    }
+
+    protected abstract bool IsDetectedEntityValid(Collider detection);
+
+    private void DrawPursuitLine()
+    {
+        if (_isInValidPursuit && _showPursuitLine)
+        {
+            Gizmos.color = _pursuitPointerColor;
+            Gizmos.DrawLine(transform.position, transform.position + _targetRelativeDirection * Mathf.Min(_detectionRadius,_distanceFromPursuitTarget));
+        }
+    }
+
+    private void UpdateTargetingData()
+    {
+        _pursuitTargetPosition = _pursuitTarget.transform.position;
+        
+        //update distance
+        _distanceFromPursuitTarget = Vector3.Distance(transform.position, _pursuitTargetPosition);
+
+        //calculate the target's relative direction
+        _targetRelativeDirection = transform.InverseTransformDirection(_pursuitTargetPosition);
+    }
+
+    private void ClearTargetingData()
+    {
+        _pursuitTarget= null;
+        _pursuitTargetPosition = Vector3.zero;
+        _distanceFromPursuitTarget = 0;
+        _targetRelativeDirection= Vector3.zero;
+    }
+
+    protected void PursueEntity()
+    {
+        //get at the target object if it still exists
+        if (IsPursuitTargetStillValid())
+        {
+            UpdateTargetingData();
+
+            //toggle drawing the pursuit line
+            _isInValidPursuit = true;
+
+            if (IsEntityInRangeForInteraction())
+                PerformEntityBasedInteraction();
+            else
+                GetWithinRangeOfEntity();
+        }
+        
+        //otherwise, either resume moving to the objective or idle.
+        else
+        {
+
+            //toggle hiding the pursuit line
+            _isInValidPursuit = false;
+
+            ClearTargetingData();
+
+            if (_currentObjective != null)
+                ChangeState(CreatureState.MovingToObjective);
+            else
+                ChangeState(CreatureState.Idling);
+        }
+    }
+    protected abstract bool IsEntityInRangeForInteraction();
+    protected abstract void PerformEntityBasedInteraction();
+    protected abstract void GetWithinRangeOfEntity();
+    protected abstract bool IsPursuitTargetStillValid();
+
+
+    protected void ManageCreatureBehaviour()
+    {
+        switch (_currentState)
+        {
+            case CreatureState.Idling:
+
+                //continue questing towards the objective, if we have one
+                if (_currentObjective != null)
+                    ApproachObjective();
+
+                //else remain vigilant
+                else
+                    DetectPursuableEntities();
+                
+                break;
+
+
+            case CreatureState.MovingToObjective:
+
+                //Move towards the current objective until the objective is reached
+                ApproachObjective();
+                break;
+
+
+            case CreatureState.PursuingEntity:
+                
+                //Pursue the entity, whatever it is, however we're capable of pursuing it
+                PursueEntity();
+                break;
+
+
+            case CreatureState.EnteringAction:
+                break;
+
+
+            case CreatureState.PerformingAction:
+                break;
+
+
+            case CreatureState.RecoveringFromAction:
+                break;
+
+
+            case CreatureState.Stunned:
+                break;
+
+
+            case CreatureState.Dead:
+                break;
+
+
+
+            default:
+                break;
+        }
+            
+    }
 
 
 
@@ -315,13 +522,13 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour, IDama
 
     [BoxGroup("Debug")]
     [Button]
-    public abstract void CommandMovementToPosition(Vector3 position);
-
-    [BoxGroup("Debug")]
-    [Button]
-    public void CommandMovementToPosition(Transform transform)
+    public void SetObjective(Transform objectiveTransform)
     {
-        CommandMovementToPosition(transform.position);
+        if (_currentState != CreatureState.Dead && _navAgent != null && objectiveTransform != null)
+        {
+            _currentObjective = objectiveTransform;
+            ChangeState(CreatureState.MovingToObjective);
+        }
     }
 
     [BoxGroup("Debug")]
