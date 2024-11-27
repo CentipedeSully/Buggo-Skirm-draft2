@@ -860,6 +860,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 223640403368087725, guid: 50b614d2d941a404b87e34d8178b26e4,
         type: 3}
+      propertyPath: _forceSpawnRate
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 223640403368087725, guid: 50b614d2d941a404b87e34d8178b26e4,
+        type: 3}
       propertyPath: _haulerContainer
       value: 
       objectReference: {fileID: 1089671215}
@@ -878,6 +883,11 @@ PrefabInstance:
       propertyPath: _commanderContainer
       value: 
       objectReference: {fileID: 1427970263}
+    - target: {fileID: 223640403368087725, guid: 50b614d2d941a404b87e34d8178b26e4,
+        type: 3}
+      propertyPath: _forceSpawnSoldersOverTime
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2725645615033163822, guid: 50b614d2d941a404b87e34d8178b26e4,
         type: 3}
       propertyPath: m_Name
@@ -2547,6 +2557,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 223640403368087725, guid: 50b614d2d941a404b87e34d8178b26e4,
         type: 3}
+      propertyPath: _forceSpawnRate
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 223640403368087725, guid: 50b614d2d941a404b87e34d8178b26e4,
+        type: 3}
       propertyPath: _haulerContainer
       value: 
       objectReference: {fileID: 1633417814}
@@ -2565,6 +2580,11 @@ PrefabInstance:
       propertyPath: _commanderContainer
       value: 
       objectReference: {fileID: 1079613983}
+    - target: {fileID: 223640403368087725, guid: 50b614d2d941a404b87e34d8178b26e4,
+        type: 3}
+      propertyPath: _forceSpawnSoldersOverTime
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2725645615033163822, guid: 50b614d2d941a404b87e34d8178b26e4,
         type: 3}
       propertyPath: m_Name

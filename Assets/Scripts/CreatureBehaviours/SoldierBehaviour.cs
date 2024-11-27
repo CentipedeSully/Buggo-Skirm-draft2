@@ -14,7 +14,8 @@ public class SoldierBehaviour : AbstractCreatureBehaviour
     [SerializeField] [Min(0)]private float _targetingAngleForgiveness = 1f;
     [TabGroup("Core", "Ai")]
     [SerializeField] private float _targetingTurnSpeed = 50;
-
+    [TabGroup("Core", "Ai")]
+    [SerializeField] [ReadOnly] private float _signedAngularDifference;
 
 
     //Monobehaviours
@@ -45,7 +46,7 @@ public class SoldierBehaviour : AbstractCreatureBehaviour
     private float CalculateAngularDifferenceFromAtkDirectionToTarget()
     {
         //calculate the angular difference btwn the atkDirection and the target's current relational direction
-        return Vector3.SignedAngle(_coreAtk.GetAtkDirection(), new Vector3(_targetRelativeDirection.x,0,_targetRelativeDirection.z), Vector3.up);
+        return Vector3.SignedAngle(_coreAtk.GetAtkDirection(), new Vector3(_targetDirection.x,0,_targetDirection.z), Vector3.up);
     }
 
     protected override bool IsEntityInRangeForInteraction()
@@ -53,13 +54,11 @@ public class SoldierBehaviour : AbstractCreatureBehaviour
         bool isEntityWithinAppropriateDistance = _distanceFromPursuitTarget >= _coreAtk.GetMinAtkRange() &&
                                                  _distanceFromPursuitTarget <= _coreAtk.GetMaxAtkRange();
 
+        //calculate the angular difference
+        _signedAngularDifference = CalculateAngularDifferenceFromAtkDirectionToTarget();
+
         //Ignore the sign. Only care about whether or not we're misaligned--
-        float angularDifference = Mathf.Abs(CalculateAngularDifferenceFromAtkDirectionToTarget());
-
-
-        bool isEntityAligned = angularDifference <= _targetingAngleForgiveness;
-
-        //Debug.Log($"{name}({_faction}) angularDifference: {angularDifference}");
+        bool isEntityAligned = Mathf.Abs(_signedAngularDifference) <= _targetingAngleForgiveness;
 
         return isEntityWithinAppropriateDistance && isEntityAligned;
 
@@ -87,12 +86,6 @@ public class SoldierBehaviour : AbstractCreatureBehaviour
             //Stop Moving towards the target
             EndCurrentMovement();
 
-            //calculate our current (mis)alignment
-            float signedAngularDifference = CalculateAngularDifferenceFromAtkDirectionToTarget();
-
-            Debug.Log($"{name}({_faction}) angularDifference: {signedAngularDifference}");
-
-
             //calculate our rotation offset
             float frameRotation = _targetingTurnSpeed * Time.deltaTime;
 
@@ -104,11 +97,11 @@ public class SoldierBehaviour : AbstractCreatureBehaviour
 
 
             //turn to the left if necessary
-            if (signedAngularDifference < 0)
+            if (_signedAngularDifference < 0)
                 transform.rotation = Quaternion.Euler(currentRotation - rotationalAdditive);
 
             //else turn to the right if necessary
-            else if (signedAngularDifference > 0)
+            else if (_signedAngularDifference > 0)
                 transform.rotation = Quaternion.Euler(currentRotation + rotationalAdditive);
 
         }

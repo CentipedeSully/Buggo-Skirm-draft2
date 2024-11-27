@@ -23,7 +23,7 @@ MonoBehaviour:
     SerializationNodes: []
   _prefab: {fileID: 1472260622996625530, guid: daf8fe48b37d78a4e925b44781f4c244, type: 3}
   _creatureType: 2
-  _baseHealth: 1
+  _baseHealth: 3
   _baseMoveSpeed: 1
   _baseTurnSpeed: 120
   _corpseResources: 

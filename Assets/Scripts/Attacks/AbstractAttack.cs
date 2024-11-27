@@ -49,7 +49,6 @@ public abstract class AbstractAttack : SerializedMonoBehaviour, IAttack
     //Declarations
     [SerializeField] [ReadOnly] protected AtkState _atkState = AtkState.unset;
     [SerializeField] protected Transform _atkOrigin;
-    [SerializeField] [ReadOnly] protected Vector3 _localAtkDirection;
     [SerializeField] protected Dictionary<AtkState,string> _actionNames = new Dictionary<AtkState,string>();
     [SerializeField] protected float _prepDuration = .3f;
     [SerializeField] protected float _castDuration = .2f;
@@ -92,9 +91,7 @@ public abstract class AbstractAttack : SerializedMonoBehaviour, IAttack
         DefaultActionNameIfNecessary(AtkState.RecovingFromAtk);
         DefaultActionNameIfNecessary(AtkState.CoolingAtk);
 
-        //calculate the AtkDirection.
-        //Used to orient the attacker's rotation into a favorable attack angle
-        _localAtkDirection = (transform.position - _atkOrigin.position).normalized;
+
     }
 
     protected void DefaultActionNameIfNecessary(AtkState state)
@@ -264,5 +261,5 @@ public abstract class AbstractAttack : SerializedMonoBehaviour, IAttack
     public float GetMinAtkRange() { return _minAtkRange; }
     public float GetMaxAtkRange() { return _maxAtkRange; }
 
-    public Vector3 GetAtkDirection() { return _localAtkDirection; }
+    public Vector3 GetAtkDirection() { return (_atkOrigin.position - transform.localPosition).normalized; }
 }

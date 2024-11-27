@@ -77,12 +77,17 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour, IDama
     [TabGroup("Core", "Ai")]
     [SerializeField] [ReadOnly] protected float _distanceFromPursuitTarget;
     [TabGroup("Core", "Ai")]
-    [SerializeField] [ReadOnly] protected Vector3 _targetRelativeDirection;
+    [SerializeField] [ReadOnly] protected Vector3 _targetDirection;
     [TabGroup("Core", "Ai")]
     [SerializeField] protected Color _pursuitPointerColor;
     [TabGroup("Core", "Ai")]
-    [SerializeField] protected bool _showPursuitLine = true;
-    protected bool _isInValidPursuit = false;
+    [SerializeField] protected Color _attackLineColor;
+    [TabGroup("Core", "Ai")]
+    [SerializeField] protected bool _showPursuitLine = false;
+    [TabGroup("Core", "Ai")]
+    [SerializeField] protected bool _showAttackLine = false;
+    [TabGroup("Core", "Ai")]
+    [SerializeField][ReadOnly] protected bool _isInValidPursuit = false;
 
 
     [TabGroup("Core", "Movement")]
@@ -146,6 +151,7 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour, IDama
     private void OnDrawGizmos()
     {
         DrawPursuitLine();
+        DrawAttackLine();
     }
 
 
@@ -244,7 +250,7 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour, IDama
                 break;
 
             case AtkState.CoolingAtk:
-                ChangeState(CreatureState.Idling, actionName);
+                ChangeState(CreatureState.PursuingEntity, actionName);
                 break;
 
             default:
@@ -362,19 +368,29 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour, IDama
         if (_isInValidPursuit && _showPursuitLine)
         {
             Gizmos.color = _pursuitPointerColor;
-            Gizmos.DrawLine(transform.position, transform.position + _targetRelativeDirection * Mathf.Min(_detectionRadius,_distanceFromPursuitTarget));
+            Gizmos.DrawLine(transform.position, transform.position + _targetDirection);
+        }
+    }
+    private void DrawAttackLine()
+    {
+        if (_coreAtk != null && _showAttackLine)
+        {
+            Gizmos.color = _attackLineColor;
+            Gizmos.DrawLine(transform.position, transform.position + (_coreAtk.GetAtkDirection() * _coreAtk.GetMaxAtkRange()));
         }
     }
 
     private void UpdateTargetingData()
     {
-        _pursuitTargetPosition = _pursuitTarget.transform.position;
+        //ignore the y axis
+        _pursuitTargetPosition = new Vector3(_pursuitTarget.transform.position.x,0, _pursuitTarget.transform.position.z);
+        Vector3 currentPositionNoY = new Vector3(transform.position.x, 0, transform.position.z);
         
         //update distance
-        _distanceFromPursuitTarget = Vector3.Distance(transform.position, _pursuitTargetPosition);
+        _distanceFromPursuitTarget = Vector3.Distance(currentPositionNoY, _pursuitTargetPosition);
 
-        //calculate the target's relative direction
-        _targetRelativeDirection = transform.InverseTransformDirection(_pursuitTargetPosition);
+        //calculate the target's local position in repect to our position
+        _targetDirection = _pursuitTargetPosition - currentPositionNoY;
     }
 
     private void ClearTargetingData()
@@ -382,7 +398,7 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour, IDama
         _pursuitTarget= null;
         _pursuitTargetPosition = Vector3.zero;
         _distanceFromPursuitTarget = 0;
-        _targetRelativeDirection= Vector3.zero;
+        _targetDirection= Vector3.zero;
     }
 
     protected void PursueEntity()
@@ -396,7 +412,11 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour, IDama
             _isInValidPursuit = true;
 
             if (IsEntityInRangeForInteraction())
+            {
+                EndCurrentMovement();
                 PerformEntityBasedInteraction();
+            }
+                
             else
                 GetWithinRangeOfEntity();
         }
