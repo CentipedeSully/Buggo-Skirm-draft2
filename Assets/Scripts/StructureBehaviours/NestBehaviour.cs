@@ -21,7 +21,7 @@ public enum Faction
     Beta
 }
 
-public class NestBehaviour : MonoBehaviour
+public class NestBehaviour : MonoBehaviour, IDamageable
 {
     //Declarations
     [TabGroup("Core","Setup")]
@@ -47,6 +47,11 @@ public class NestBehaviour : MonoBehaviour
     [TabGroup("Core", "Setup")]
     [SerializeField] private Faction _faction = Faction.unset;
 
+
+    [SerializeField] private int _health = 50;
+    [SerializeField] private int _entityID;
+
+
     [TabGroup("Debug")]
     [SerializeField] private bool _forceSpawnSoldersOverTime = false;
     [TabGroup("Debug")]
@@ -54,7 +59,13 @@ public class NestBehaviour : MonoBehaviour
     [TabGroup("Debug")]
     [SerializeField] [ReadOnly] private bool _isForceSpawning = false;
 
+
     //Monobehaviours
+    private void Awake()
+    {
+        _entityID = GetInstanceID();
+    }
+
     private void Update()
     {
         ForceSpawnSoldiersOverTime();
@@ -83,7 +94,12 @@ public class NestBehaviour : MonoBehaviour
         }
     }
 
-
+    private void Die()
+    {
+        _health = 0;
+        StopAllCoroutines();
+        Destroy(gameObject);
+    }
 
     //Externals
     [BoxGroup("Debug")]
@@ -115,7 +131,22 @@ public class NestBehaviour : MonoBehaviour
 
     }
 
+    public GameObject GetGameObject() { return gameObject; }
 
+    public Faction GetFaction() { return _faction; }
 
+    public int GetEntityID() { return _entityID; }
 
+    public void TakeDamage(int damage)
+    {
+        _health -= damage;
+        if (_health <= 0)
+            Die();
+
+    }
+
+    public bool IsDead()
+    {
+        return _health <= 0;
+    }
 }
