@@ -1,12 +1,40 @@
+using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class CommanderBehaviour : AbstractCreatureBehaviour
+public class CommanderBehaviour : PlayerDrivenCreatureBehaviour
 {
     //Declarations
     [SerializeField] private CommanderData _data;
+
+    [TabGroup("Core", "Ai")]
+    [SerializeField][Min(0)] private float _targetingAngleForgiveness = 1f;
+    [TabGroup("Core", "Ai")]
+    [SerializeField] private float _targetingTurnSpeed = 50;
+    [TabGroup("Core", "Ai")]
+    [SerializeField][ReadOnly] private float _signedAngularDifference;
+
+
+
+    
+
+
+    //Monobehaviours
+
+
+
+
+    //internals
+    protected override void ReadData()
+    {
+        _maxHp = _data.GetBaseHealth();
+        _currentHp = _maxHp;
+
+        _baseSpeed = _data.GetBaseMoveSpeed();
+        GetComponent<NavMeshAgent>().speed = _baseSpeed;
+    }
 
     protected override void CreateCorpseYield()
     {
@@ -18,10 +46,6 @@ public class CommanderBehaviour : AbstractCreatureBehaviour
         throw new System.NotImplementedException();
     }
 
-    protected override bool IsDetectedEntityValid(Collider detection)
-    {
-        throw new System.NotImplementedException();
-    }
 
     protected override bool IsEntityInRangeForInteraction()
     {
@@ -38,20 +62,19 @@ public class CommanderBehaviour : AbstractCreatureBehaviour
         throw new System.NotImplementedException();
     }
 
-
-    //Monobehaviours
-
-
-
-
-    //internals
-    protected override void ReadData()
+    protected override void PursueEntity()
     {
-        _maxHp = _data.GetBaseHealth();
-        _currentHp = _maxHp;
+        throw new System.NotImplementedException();
+    }
 
-        _baseSpeed = _data.GetBaseMoveSpeed();
-        GetComponent<NavMeshAgent>().speed = _baseSpeed;
+    protected override void ManageCreatureBehaviour()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void SetObjective(Transform objectiveTransform)
+    {
+        throw new System.NotImplementedException();
     }
 
 

@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 
 
-public class HaulerBehaviour : AbstractCreatureBehaviour
+public class HaulerBehaviour : AiDrivenCreatureBehaviour
 {
     //Declarations
     [SerializeField] private HaulerData _data;

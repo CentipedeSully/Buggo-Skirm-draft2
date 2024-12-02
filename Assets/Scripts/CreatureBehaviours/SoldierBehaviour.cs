@@ -5,7 +5,7 @@ using UnityEngine.AI;
 using Sirenix.OdinInspector;
 
 
-public class SoldierBehaviour : AbstractCreatureBehaviour
+public class SoldierBehaviour : AiDrivenCreatureBehaviour
 {
     //Declarations
     [SerializeField] private SoldierData _data;
