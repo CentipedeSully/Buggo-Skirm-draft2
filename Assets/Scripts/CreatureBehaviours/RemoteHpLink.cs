@@ -14,7 +14,7 @@ public class RemoteHpLink : SerializedMonoBehaviour, IDamageable, IEntity
             Debug.LogError("CoreDamageableScript is unset for a remote HP Link");
     }
 
-    public int GetEntityID() { return _coreDamageableScript.GetEntityID();}
+    public EntityType GetEntityType() { return _coreDamageableScript.GetEntityInfo().GetEntityType();}
 
     public Faction GetFaction() {  return _coreDamageableScript.GetFaction();}
 
@@ -23,4 +23,14 @@ public class RemoteHpLink : SerializedMonoBehaviour, IDamageable, IEntity
     public void TakeDamage(int damage) { _coreDamageableScript.TakeDamage(damage);}
 
     public bool IsDead() {  return _coreDamageableScript.IsDead();}
+
+    public int GetEntityID()
+    {
+        return _coreDamageableScript.GetEntityInfo().GetEntityID();
+    }
+
+    public IEntity GetEntityInfo()
+    {
+        return _coreDamageableScript.GetEntityInfo();
+    }
 }

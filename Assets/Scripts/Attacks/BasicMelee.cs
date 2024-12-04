@@ -71,14 +71,14 @@ public class BasicMelee : AbstractAttack
                 //NOR attacking an entity that's already dead!
                 if (
                     damageableBehaviour.GetFaction() != _attackerBehaviour.GetFaction() &&
-                    !_entitiesHitByLatestAttack.Contains(damageableBehaviour.GetEntityID()) &&
+                    !_entitiesHitByLatestAttack.Contains(damageableBehaviour.GetEntityInfo().GetEntityID()) &&
                     !damageableBehaviour.IsDead())
                 {
                     //apply the damage
                     damageableBehaviour.TakeDamage(_damage);
 
                     //track what we hit (for debugging)
-                    _entitiesHitByLatestAttack.Add(damageableBehaviour.GetEntityID());
+                    _entitiesHitByLatestAttack.Add(damageableBehaviour.GetEntityInfo().GetEntityID());
 
                     //end the cast if damage piercing is disabled
                     if (!_doesAtkHitMultipleEntities)

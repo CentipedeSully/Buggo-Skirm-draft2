@@ -6,44 +6,29 @@ using UnityEngine;
 public abstract class AiDrivenCreatureBehaviour : AbstractCreatureBehaviour
 {
     //Declarations
-    [TabGroup("Core", "Ai")]
+    [TabGroup("Driver", "Driver")]
     [SerializeField][ReadOnly] protected Transform _currentObjective;
     protected Vector3 _objectiveDestination;
-    [TabGroup("Core", "Ai")]
+    [TabGroup("Driver", "Driver")]
     [SerializeField] protected bool _isObjectivePathingInterruptable = true;
-    [TabGroup("Core", "Ai")]
+    [TabGroup("Driver", "Driver")]
     [SerializeField] protected LayerMask _detectionLayerMask;
-    [TabGroup("Core", "Ai")]
+    [TabGroup("Driver", "Driver")]
     [SerializeField] protected float _detectionRadius = 3;
-    [TabGroup("Core", "Ai")]
-    [SerializeField][ReadOnly] protected GameObject _pursuitTarget;
-    [TabGroup("Core", "Ai")]
-    [SerializeField][ReadOnly] protected Vector3 _pursuitTargetPosition;
-    [TabGroup("Core", "Ai")]
-    [SerializeField][ReadOnly] protected float _distanceFromPursuitTarget;
-    [TabGroup("Core", "Ai")]
-    [SerializeField][ReadOnly] protected Vector3 _targetDirection;
-    [TabGroup("Core", "Ai")]
-    [SerializeField] protected Color _pursuitPointerColor;
-    [TabGroup("Core", "Ai")]
-    [SerializeField] protected Color _attackLineColor;
-    [TabGroup("Core", "Ai")]
-    [SerializeField] protected bool _showPursuitLine = false;
-    [TabGroup("Core", "Ai")]
-    [SerializeField] protected bool _showAttackLine = false;
-    [TabGroup("Core", "Ai")]
-    [SerializeField][ReadOnly] protected bool _isInValidPursuit = false;
+    [TabGroup("Driver", "Driver")]
+
+
 
 
 
 
 
     //Monobehaviours
-    private void OnDrawGizmos()
+    private void Update()
     {
-        DrawPursuitLine();
-        DrawAttackLine();
+        ManageCreatureBehaviour();
     }
+
 
 
 
@@ -107,25 +92,7 @@ public abstract class AiDrivenCreatureBehaviour : AbstractCreatureBehaviour
     }
 
 
-    private void UpdateTargetingData()
-    {
-        //ignore the y axis
-        _pursuitTargetPosition = new Vector3(_pursuitTarget.transform.position.x, 0, _pursuitTarget.transform.position.z);
-        Vector3 currentPositionNoY = new Vector3(transform.position.x, 0, transform.position.z);
 
-        //update distance
-        _distanceFromPursuitTarget = Vector3.Distance(currentPositionNoY, _pursuitTargetPosition);
-
-        //calculate the target's local position in repect to our position
-        _targetDirection = _pursuitTargetPosition - currentPositionNoY;
-    }
-    private void ClearTargetingData()
-    {
-        _pursuitTarget = null;
-        _pursuitTargetPosition = Vector3.zero;
-        _distanceFromPursuitTarget = 0;
-        _targetDirection = Vector3.zero;
-    }
     protected override void PursueEntity()
     {
         //get at the target object if it still exists
@@ -209,22 +176,7 @@ public abstract class AiDrivenCreatureBehaviour : AbstractCreatureBehaviour
     }
 
 
-    private void DrawPursuitLine()
-    {
-        if (_isInValidPursuit && _showPursuitLine)
-        {
-            Gizmos.color = _pursuitPointerColor;
-            Gizmos.DrawLine(transform.position, transform.position + _targetDirection);
-        }
-    }
-    private void DrawAttackLine()
-    {
-        if (_coreAtk != null && _showAttackLine)
-        {
-            Gizmos.color = _attackLineColor;
-            Gizmos.DrawLine(transform.position, transform.position + (_coreAtk.GetAtkDirection() * _coreAtk.GetMaxAtkRange()));
-        }
-    }
+
 
 
     //Externals

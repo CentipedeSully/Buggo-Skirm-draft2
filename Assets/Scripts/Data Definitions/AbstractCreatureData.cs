@@ -71,7 +71,7 @@ public abstract class AbstractCreatureData : SerializedScriptableObject
             _baseCorpseYield.Clear();
 
             _corpseYieldDictionaryBuilt = true;
-            Debug.Log($"{name} CorpseYield Data Successfully cleared.");
+            //Debug.Log($"{name} CorpseYield Data Successfully cleared.");
         }
 
         else if (_corpseResources.Length == _corpseResourceYields.Length)
@@ -84,7 +84,7 @@ public abstract class AbstractCreatureData : SerializedScriptableObject
 
             _corpseYieldDictionaryBuilt = true;
 
-            Debug.Log($"{name} CorpseYield Data Successfully rebuilt.");
+            //Debug.Log($"{name} CorpseYield Data Successfully rebuilt.");
 
         }
 
@@ -101,7 +101,7 @@ public abstract class AbstractCreatureData : SerializedScriptableObject
             _baseSpawnCost.Clear();
 
             _spawnCostDictionaryBuilt = true;
-            Debug.Log($"{name} SpawnCost Data Successfully cleared.");
+            //Debug.Log($"{name} SpawnCost Data Successfully cleared.");
 
         }
 
@@ -115,7 +115,7 @@ public abstract class AbstractCreatureData : SerializedScriptableObject
                 _baseSpawnCost.Add(_spawnResources[i], _spawnResourceCosts[i]);
 
             _spawnCostDictionaryBuilt = true;
-            Debug.Log($"{name} SpawnCost Data Successfully rebuilt.");
+            //Debug.Log($"{name} SpawnCost Data Successfully rebuilt.");
 
         }
 

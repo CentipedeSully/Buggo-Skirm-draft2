@@ -49,13 +49,14 @@ MonoBehaviour:
       Data: 
   _prefab: {fileID: 0}
   _creatureType: 1
-  _baseHealth: 1
+  _baseHealth: 999
   _baseMoveSpeed: 3
+  _baseTurnSpeed: 120
   _corpseResources: 
   _corpseResourceYields: 
   _spawnResources: 
   _spawnResourceCosts: 
   _corpseYieldDictionaryBuilt: 1
   _spawnCostDictionaryBuilt: 1
-  _baseDamage: 0
+  _baseDamage: 9999
   _baseAtkCooldown: 0

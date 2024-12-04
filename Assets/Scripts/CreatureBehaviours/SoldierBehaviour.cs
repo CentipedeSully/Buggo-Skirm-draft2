@@ -10,13 +10,6 @@ public class SoldierBehaviour : AiDrivenCreatureBehaviour
     //Declarations
     [SerializeField] private SoldierData _data;
 
-    [TabGroup("Core", "Ai")]
-    [SerializeField] [Min(0)]private float _targetingAngleForgiveness = 1f;
-    [TabGroup("Core", "Ai")]
-    [SerializeField] private float _targetingTurnSpeed = 50;
-    [TabGroup("Core", "Ai")]
-    [SerializeField] [ReadOnly] private float _signedAngularDifference;
-
 
     //Monobehaviours
 
@@ -43,24 +36,11 @@ public class SoldierBehaviour : AiDrivenCreatureBehaviour
         _navAgent.angularSpeed = _baseTurnSpeed;
     }
 
-    private float CalculateAngularDifferenceFromAtkDirectionToTarget()
-    {
-        //calculate the angular difference btwn the atkDirection and the target's current relational direction
-        return Vector3.SignedAngle(_coreAtk.GetAtkDirection(), new Vector3(_targetDirection.x,0,_targetDirection.z), Vector3.up);
-    }
-
     protected override bool IsEntityInRangeForInteraction()
     {
-        bool isEntityWithinAppropriateDistance = _distanceFromPursuitTarget >= _coreAtk.GetMinAtkRange() &&
-                                                 _distanceFromPursuitTarget <= _coreAtk.GetMaxAtkRange();
-
-        //calculate the angular difference
-        _signedAngularDifference = CalculateAngularDifferenceFromAtkDirectionToTarget();
-
-        //Ignore the sign. Only care about whether or not we're misaligned--
-        bool isEntityAligned = Mathf.Abs(_signedAngularDifference) <= _targetingAngleForgiveness;
-
-        return isEntityWithinAppropriateDistance && isEntityAligned;
+        if (_coreAtk == null)
+            return false;
+        else return IsEntityInAttackRange();
 
 
     }
@@ -73,39 +53,11 @@ public class SoldierBehaviour : AiDrivenCreatureBehaviour
 
     protected override void GetWithinRangeOfEntity()
     {
-        //move towards the target if too far
-        if (_distanceFromPursuitTarget > _coreAtk.GetMaxAtkRange())
-            _navAgent.SetDestination(_pursuitTarget.transform.position);
-
-        //back away from the target if too close
-        else if (_distanceFromPursuitTarget < _coreAtk.GetMinAtkRange())
-            _navAgent.Move(transform.position - _pursuitTargetPosition);
-        
-        else
-        {
-            //Stop Moving towards the target
-            EndCurrentMovement();
-
-            //calculate our rotation offset
-            float frameRotation = _targetingTurnSpeed * Time.deltaTime;
-
-            //create our rotation vector
-            Vector3 rotationalAdditive = new Vector3(0,frameRotation,0);
-
-            //get our current rotataion
-            Vector3 currentRotation = transform.rotation.eulerAngles;
-
-
-            //turn to the left if necessary
-            if (_signedAngularDifference < 0)
-                transform.rotation = Quaternion.Euler(currentRotation - rotationalAdditive);
-
-            //else turn to the right if necessary
-            else if (_signedAngularDifference > 0)
-                transform.rotation = Quaternion.Euler(currentRotation + rotationalAdditive);
-
-        }
+        if (_coreAtk != null)
+            GetWithinAttackRangeOfEntity();
     }
+
+    
 
     protected override void CreateCorpseYield()
     {

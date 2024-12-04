@@ -20,12 +20,20 @@ public enum CreatureState
     Dead
 }
 
+public enum EntityType
+{
+    unset,
+    creature,
+    structure,
+    pickup
+}
+
 public interface IDamageable
 {
 
     GameObject GetGameObject();
     Faction GetFaction();
-    int GetEntityID();
+    IEntity GetEntityInfo();
     void TakeDamage(int damage);
     bool IsDead();
 }
@@ -34,14 +42,16 @@ public interface IAttacker
 {
     GameObject GetGameObject();
     Faction GetFaction();
-    int GetEntityID();
+    IEntity GetEntityInfo();
 }
 
 public interface IEntity
 {
     int GetEntityID();
+    EntityType GetEntityType();
     Faction GetFaction();
     GameObject GetGameObject();
+    bool IsDead();
 }
 
 public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour, IDamageable, IAttacker, IEntity
@@ -49,6 +59,8 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour, IDama
     //Delcarations
     [TabGroup("Core","Info")]
     [SerializeField] [ReadOnly] protected int _entityID;
+    [TabGroup("Core", "Info")]
+    [SerializeField] protected EntityType _entityType = EntityType.creature;
     [TabGroup("Core", "Info")]
     [SerializeField] [ReadOnly] protected CreatureType _creatureType = CreatureType.unset;
     [TabGroup("Core", "Info")]
@@ -58,7 +70,25 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour, IDama
     [TabGroup("Core", "Info")]
     [SerializeField] [ReadOnly] protected string _currentActionName;
     private string _defaultActionName = "None";
-    
+
+    [TabGroup("Core", "Ai")]
+    [SerializeField][ReadOnly] protected GameObject _pursuitTarget;
+    [TabGroup("Core", "Ai")]
+    [SerializeField][ReadOnly] protected Vector3 _pursuitTargetPosition;
+    [TabGroup("Core", "Ai")]
+    [SerializeField][ReadOnly] protected float _distanceFromPursuitTarget;
+    [TabGroup("Core", "Ai")]
+    [SerializeField][ReadOnly] protected Vector3 _targetDirection;
+    [TabGroup("Core", "Ai")]
+    [SerializeField] protected Color _pursuitPointerColor;
+    [TabGroup("Core", "Ai")]
+    [SerializeField] protected Color _attackLineColor;
+    [TabGroup("Core", "Ai")]
+    [SerializeField] protected bool _showPursuitLine = false;
+    [TabGroup("Core", "Ai")]
+    [SerializeField] protected bool _showAttackLine = false;
+    [TabGroup("Core", "Ai")]
+    [SerializeField][ReadOnly] protected bool _isInValidPursuit = false;
 
 
     [TabGroup("Core", "Movement")]
@@ -80,9 +110,15 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour, IDama
     [TabGroup("Core", "Combat")]
     [SerializeField] protected IAttack _coreAtk;
     [TabGroup("Core", "Combat")]
+    [SerializeField] [ReadOnly] protected float _signedAngularDifference;
+    [TabGroup("Core", "Combat")]
+    [SerializeField] [ReadOnly] protected float _targetingAngleForgiveness;
+    [TabGroup("Core", "Combat")]
+    [SerializeField] protected float _targetingTurnSpeed = 120;
+
+
+    [TabGroup("Core", "Death")]
     [SerializeField] [ReadOnly] protected Dictionary<ResourceType, int> _currentCorpseYield = new();
-
-
     [TabGroup("Core", "Death")]
     [SerializeField] protected float _despawnTime = .5f;
 
@@ -113,13 +149,11 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour, IDama
         UnsubscribeAllFromOnStateChanged();
     }
 
-    private void Update()
+    private void OnDrawGizmos()
     {
-        ManageCreatureBehaviour();
-        
+        DrawAttackLine();
+        DrawPursuitLine();
     }
-
-
 
 
 
@@ -284,7 +318,26 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour, IDama
     }
 
 
+    protected void UpdateTargetingData()
+    {
+        //ignore the y axis
+        _pursuitTargetPosition = new Vector3(_pursuitTarget.transform.position.x, 0, _pursuitTarget.transform.position.z);
+        Vector3 currentPositionNoY = new Vector3(transform.position.x, 0, transform.position.z);
 
+        //update distance
+        _distanceFromPursuitTarget = Vector3.Distance(currentPositionNoY, _pursuitTargetPosition);
+
+        //calculate the target's local position in repect to our position
+        _targetDirection = _pursuitTargetPosition - currentPositionNoY;
+    }
+
+    protected virtual void ClearTargetingData()
+    {
+        _pursuitTarget = null;
+        _pursuitTargetPosition = Vector3.zero;
+        _distanceFromPursuitTarget = 0;
+        _targetDirection = Vector3.zero;
+    }
 
 
 
@@ -298,11 +351,81 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour, IDama
 
 
     protected abstract void ManageCreatureBehaviour();
+    protected float CalculateAngularDifferenceFromAtkDirectionToTarget()
+    {
+        //calculate the angular difference btwn the atkDirection and the target's current relational direction
+        return Vector3.SignedAngle(_coreAtk.GetAtkDirection(), new Vector3(_targetDirection.x, 0, _targetDirection.z), Vector3.up);
+    }
+    protected virtual bool IsEntityInAttackRange()
+    {
+        bool isEntityWithinAppropriateDistance = _distanceFromPursuitTarget >= _coreAtk.GetMinAtkRange() &&
+                                                 _distanceFromPursuitTarget <= _coreAtk.GetMaxAtkRange();
+
+        //calculate the angular difference
+        _signedAngularDifference = CalculateAngularDifferenceFromAtkDirectionToTarget();
+
+        //Ignore the sign. Only care about whether or not we're misaligned--
+        bool isEntityAligned = Mathf.Abs(_signedAngularDifference) <= _targetingAngleForgiveness;
+
+        return isEntityWithinAppropriateDistance && isEntityAligned;
+    }
+    protected virtual void GetWithinAttackRangeOfEntity()
+    {
+        //move towards the target if too far
+        if (_distanceFromPursuitTarget > _coreAtk.GetMaxAtkRange())
+            _navAgent.SetDestination(_pursuitTarget.transform.position);
+
+        //back away from the target if too close
+        else if (_distanceFromPursuitTarget < _coreAtk.GetMinAtkRange())
+            _navAgent.Move(transform.position - _pursuitTargetPosition);
+
+        else
+        {
+            //Stop Moving towards the target
+            EndCurrentMovement();
+
+            //calculate our rotation offset
+            float frameRotation = _targetingTurnSpeed * Time.deltaTime;
+
+            //create our rotation vector
+            Vector3 rotationalAdditive = new Vector3(0, frameRotation, 0);
+
+            //get our current rotataion
+            Vector3 currentRotation = transform.rotation.eulerAngles;
 
 
+            //turn to the left if necessary
+            if (_signedAngularDifference < 0)
+                transform.rotation = Quaternion.Euler(currentRotation - rotationalAdditive);
+
+            //else turn to the right if necessary
+            else if (_signedAngularDifference > 0)
+                transform.rotation = Quaternion.Euler(currentRotation + rotationalAdditive);
+
+        }
+    }
+
+    private void DrawPursuitLine()
+    {
+        if (_isInValidPursuit && _showPursuitLine)
+        {
+            Gizmos.color = _pursuitPointerColor;
+            Gizmos.DrawLine(transform.position, transform.position + _targetDirection);
+        }
+    }
+    private void DrawAttackLine()
+    {
+        if (_coreAtk != null && _showAttackLine)
+        {
+            Gizmos.color = _attackLineColor;
+            Gizmos.DrawLine(transform.position, transform.position + (_coreAtk.GetAtkDirection() * _coreAtk.GetMaxAtkRange()));
+        }
+    }
 
 
     //Externals
+    [BoxGroup("Debug")]
+    [Button]
     public void SetFaction(Faction newFaction)
     {
         if (_faction != newFaction)
@@ -310,7 +433,7 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour, IDama
     }
     public Faction GetFaction() { return _faction; }
     public GameObject GetGameObject() { return gameObject; }
-    public int GetEntityID() { return _entityID; }
+    public IEntity GetEntityInfo() { return this; }
 
     [BoxGroup("Debug")]
     [Button]
@@ -396,4 +519,14 @@ public abstract class AbstractCreatureBehaviour : SerializedMonoBehaviour, IDama
     }
 
     public bool IsDead() { return _currentState == CreatureState.Dead; }
+
+    public int GetEntityID()
+    {
+        return _entityID;
+    }
+
+    public EntityType GetEntityType()
+    {
+        return _entityType;
+    }
 }

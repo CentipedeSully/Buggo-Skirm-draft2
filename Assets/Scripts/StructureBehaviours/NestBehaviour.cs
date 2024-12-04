@@ -21,7 +21,7 @@ public enum Faction
     Beta
 }
 
-public class NestBehaviour : MonoBehaviour, IDamageable
+public class NestBehaviour : MonoBehaviour, IDamageable, IEntity
 {
     //Declarations
     [TabGroup("Core","Setup")]
@@ -49,7 +49,8 @@ public class NestBehaviour : MonoBehaviour, IDamageable
 
 
     [SerializeField] private int _health = 50;
-    [SerializeField] private int _entityID;
+    [SerializeField] [ReadOnly] private int _entityID;
+    [SerializeField] private EntityType _entityType = EntityType.structure;
 
 
     [TabGroup("Debug")]
@@ -135,7 +136,7 @@ public class NestBehaviour : MonoBehaviour, IDamageable
 
     public Faction GetFaction() { return _faction; }
 
-    public int GetEntityID() { return _entityID; }
+    public EntityType GetEntityType() { return _entityType; }
 
     public void TakeDamage(int damage)
     {
@@ -145,8 +146,9 @@ public class NestBehaviour : MonoBehaviour, IDamageable
 
     }
 
-    public bool IsDead()
-    {
-        return _health <= 0;
-    }
+    public bool IsDead() {return _health <= 0;}
+
+    public IEntity GetEntityInfo() {return this;}
+
+    public int GetEntityID() {return _entityID;}
 }

@@ -9,16 +9,10 @@ public class CommanderBehaviour : PlayerDrivenCreatureBehaviour
     //Declarations
     [SerializeField] private CommanderData _data;
 
-    [TabGroup("Core", "Ai")]
-    [SerializeField][Min(0)] private float _targetingAngleForgiveness = 1f;
-    [TabGroup("Core", "Ai")]
-    [SerializeField] private float _targetingTurnSpeed = 50;
-    [TabGroup("Core", "Ai")]
-    [SerializeField][ReadOnly] private float _signedAngularDifference;
 
 
 
-    
+
 
 
     //Monobehaviours
@@ -31,9 +25,18 @@ public class CommanderBehaviour : PlayerDrivenCreatureBehaviour
     {
         _maxHp = _data.GetBaseHealth();
         _currentHp = _maxHp;
+        _creatureType = _data.GetCreatureType();
+
+        _damage = _data.GetBaseDamage();
+        _cooldown = _data.GetBaseAtkCooldown();
+        _coreAtk.SetDamage(_damage);
+        _coreAtk.SetCooldown(_cooldown);
 
         _baseSpeed = _data.GetBaseMoveSpeed();
-        GetComponent<NavMeshAgent>().speed = _baseSpeed;
+        _baseTurnSpeed = _data.GetBaseTurnSpeed();
+
+        _navAgent.speed = _baseSpeed;
+        _navAgent.angularSpeed = _baseTurnSpeed;
     }
 
     protected override void CreateCorpseYield()
@@ -41,47 +44,106 @@ public class CommanderBehaviour : PlayerDrivenCreatureBehaviour
         _currentCorpseYield = _data.GetBaseCorpseYield();
     }
 
-    protected override void GetWithinRangeOfEntity()
-    {
-        throw new System.NotImplementedException();
-    }
-
-
     protected override bool IsEntityInRangeForInteraction()
     {
-        throw new System.NotImplementedException();
-    }
-
-    protected override bool IsPursuitTargetStillValid()
-    {
-        throw new System.NotImplementedException();
+        return _distanceFromPursuitTarget <= _closeEnoughDistance;
     }
 
     protected override void PerformEntityBasedInteraction()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("Performing Interaction");
+        EntityType type = _pursuedEntity.GetEntityType();
+
+        switch (type)
+        {
+            case EntityType.creature:
+                _coreAtk?.PerformAttack();
+                break;
+
+
+            case EntityType.structure:
+                _coreAtk?.PerformAttack();
+                break;
+
+
+            case EntityType.pickup:
+                break;
+
+
+            default:
+                break;
+        }
+
     }
 
-    protected override void PursueEntity()
+    protected override void GetWithinRangeOfEntity()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("Getting within range...");
+        EntityType type = _pursuedEntity.GetEntityType();
+
+        switch (type)
+        {
+            case EntityType.creature:
+                if (IsMovementAvailable())
+                    GetWithinAttackRangeOfEntity();
+                break;
+
+
+            case EntityType.structure:
+                if (IsMovementAvailable())
+                    GetWithinAttackRangeOfEntity();
+                break;
+
+
+            case EntityType.pickup:
+                if (_navAgent.destination != _pursuitTargetPosition && IsMovementAvailable())
+                    _navAgent.SetDestination(_pursuitTargetPosition);
+                break;
+
+
+            default:
+                break;
+        }
     }
 
-    protected override void ManageCreatureBehaviour()
+    protected override bool IsPursuitTargetStillValid()
     {
-        throw new System.NotImplementedException();
+        if (_pursuitTarget == null)
+            return false;
+
+        else
+        {
+            EntityType type = _pursuedEntity.GetEntityType();
+
+            switch (type)
+            {
+                case EntityType.creature:
+                    if (_pursuedEntity.IsDead())
+                        return false;
+                    else return true;
+
+
+                case EntityType.structure:
+                    if (_pursuedEntity.IsDead())
+                        return false;
+                    else return true;
+
+
+                case EntityType.pickup:
+                    return false;
+
+
+                default:
+                    return false;
+            }
+        }
+        
     }
 
-    public override void SetObjective(Transform objectiveTransform)
-    {
-        throw new System.NotImplementedException();
-    }
 
 
 
     //Externals
-
-
 
 
 }
